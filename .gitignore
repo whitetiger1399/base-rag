@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.DS_Store
+Assigment_questions.docx
+Task2_dataset1/
+rag-setup/*
+!rag-setup/docs/
+rag-setup/docs/*
+!rag-setup/docs/AGENTS.md
+storage/chroma/
+storage/bm25/
+storage/chunks.jsonl
+shared_output/Q2_RAG_Demo/Task2_dataset1/
+shared_output/Q2_RAG_Demo/storage/
