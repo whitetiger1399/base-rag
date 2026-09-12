@@ -356,6 +356,16 @@ Packaged deliverable path: `shared_output/Q2_RAG_Demo/`.
   user requested a code push. The local files remain unchanged, while the Git
   commit is being narrowed to source code and documentation only.
 
+### 2026-09-12 — GitHub publication completed
+
+- **Completed:** Initialized the project repository on branch `main`.
+- **Completed:** Configured `origin` as
+  `https://github.com/whitetiger1399/base-rag.git`.
+- **Completed:** Pushed the code-and-documentation commit `957f9f4` to
+  `origin/main` and configured the local branch to track it.
+- **Confirmed:** Assignment files, source datasets, generated indexes, and the
+  virtual environment remain local and are excluded from Git.
+
 ### 2026-09-12 — Q2 coding session
 
 - Re-read the assignment and confirmed the Q2 deliverables.
