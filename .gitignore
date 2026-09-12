@@ -2,12 +2,8 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .DS_Store
-Assigment_questions.docx
-Task2_dataset1/
-rag-setup/
-shared_output/
-docs/
-demo_outputs.md
-storage/chroma/
-storage/bm25/
-storage/chunks.jsonl
+
+# Keep the local Python environment out of Git while retaining its project log.
+rag-setup/*
+!rag-setup/docs/
+!rag-setup/docs/**
