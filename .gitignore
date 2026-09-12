@@ -4,12 +4,10 @@ __pycache__/
 .DS_Store
 Assigment_questions.docx
 Task2_dataset1/
-rag-setup/*
-!rag-setup/docs/
-rag-setup/docs/*
-!rag-setup/docs/AGENTS.md
+rag-setup/
+shared_output/
+docs/
+demo_outputs.md
 storage/chroma/
 storage/bm25/
 storage/chunks.jsonl
-shared_output/Q2_RAG_Demo/Task2_dataset1/
-shared_output/Q2_RAG_Demo/storage/

@@ -23,9 +23,12 @@ named `rag-setup`; create it first when running a shared standalone copy.
 ```bash
 python3.9 -m venv rag-setup
 source rag-setup/bin/activate
-python -m pip install -r requirements.txt
+python -m pip install -r requirements-lock.txt
 ollama run qwen3:8b
 ```
+
+Use `requirements.txt` when resolving compatible dependency updates; use
+`requirements-lock.txt` for the tested Python 3.9 environment.
 
 The embedding model is downloaded once by `sentence-transformers`, then runs
 locally. Ollama must be running at `http://127.0.0.1:11434`.
