@@ -7,6 +7,7 @@ as untrusted data. Integrate these functions with the Q2 retriever and logger.
 from __future__ import annotations
 
 import json
+import math
 import re
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Mapping, Sequence
@@ -79,10 +80,18 @@ def faithfulness_check(
             },
         ],
     }
-    response = requests.post(f"{OLLAMA_URL}/api/chat", json=payload, timeout=120)
-    response.raise_for_status()
-    result = json.loads(response.json()["message"]["content"])
-    return max(0.0, min(1.0, float(result["score"])))
+    if answer.strip().lower() == ABSTAIN_MESSAGE:
+        return 1.0
+    try:
+        response = requests.post(f"{OLLAMA_URL}/api/chat", json=payload, timeout=120)
+        response.raise_for_status()
+        result = json.loads(response.json()["message"]["content"])
+        score = float(result["score"])
+    except (KeyError, TypeError, ValueError, json.JSONDecodeError, requests.RequestException):
+        return 0.0
+    if not math.isfinite(score):
+        return 0.0
+    return max(0.0, min(1.0, score))
 
 
 @dataclass
@@ -110,24 +119,49 @@ def run_agents(
 ) -> Dict[str, Any]:
     """Run Retriever -> Safety -> Verifier -> Answerer with bounded retries."""
     state = AgentState(original_query=query, active_query=query)
+    if detect_prompt_injection(query):
+        return {"answer": ABSTAIN_MESSAGE, "abstained": True, "reason": "unsafe query"}
 
     while state.retries <= max_retries:
         retrieved = [dict(chunk) for chunk in retriever(state.active_query)]
         state.safe_chunks = []
-        state.quarantined_chunk_ids = []
+        state.quarantined_chunk_ids = list(state.quarantined_chunk_ids)
         for chunk in retrieved:
             if detect_prompt_injection(str(chunk.get("text", ""))):
                 state.quarantined_chunk_ids.append(str(chunk.get("chunk_id", "unknown")))
             else:
                 state.safe_chunks.append(chunk)
 
+        if not state.safe_chunks:
+            return {
+                "answer": ABSTAIN_MESSAGE,
+                "abstained": True,
+                "reason": "all retrieved evidence was quarantined",
+                "retries": state.retries,
+                "quarantined_chunk_ids": state.quarantined_chunk_ids,
+            }
         if state.safe_chunks:
             state.verifier = dict(verifier(state.original_query, state.safe_chunks))
+            if state.verifier.get("verdict") == "unsafe":
+                return {"answer": ABSTAIN_MESSAGE, "abstained": True, "reason": "unsafe evidence"}
             if state.verifier.get("verdict") == "sufficient":
-                answer = answerer(state.original_query, state.safe_chunks)
+                approved_ids = {
+                    str(chunk_id) for chunk_id in state.verifier.get("approved_ids", [])
+                }
+                allowed_ids = {str(chunk["chunk_id"]) for chunk in state.safe_chunks}
+                if not approved_ids or not approved_ids.issubset(allowed_ids):
+                    return {"answer": ABSTAIN_MESSAGE, "abstained": True, "reason": "invalid verifier IDs"}
+                approved_chunks = [
+                    chunk for chunk in state.safe_chunks
+                    if str(chunk["chunk_id"]) in approved_ids
+                ]
+                answer = answerer(state.original_query, approved_chunks)
+                answer_ids = set(re.findall(r"\[([^\[\]]+)\]", answer))
+                if not answer_ids or not answer_ids.issubset(approved_ids):
+                    return {"answer": ABSTAIN_MESSAGE, "abstained": True, "reason": "invalid answer citations"}
                 cited = {
                     str(chunk["chunk_id"]): str(chunk["text"])
-                    for chunk in state.safe_chunks
+                    for chunk in approved_chunks
                     if f"[{chunk['chunk_id']}]" in answer
                 }
                 score = faithfulness_check(answer, cited) if cited else 0.0
@@ -147,7 +181,11 @@ def run_agents(
                     "retries": state.retries,
                 }
 
+            if state.verifier.get("verdict") not in {"insufficient", "sufficient", "unsafe"}:
+                return {"answer": ABSTAIN_MESSAGE, "abstained": True, "reason": "invalid verifier verdict"}
             refined = str(state.verifier.get("refined_query", "")).strip()
+            if refined == state.active_query:
+                refined = ""
             if refined:
                 state.active_query = refined
 
@@ -160,4 +198,3 @@ def run_agents(
         "retries": max_retries,
         "quarantined_chunk_ids": state.quarantined_chunk_ids,
     }
-

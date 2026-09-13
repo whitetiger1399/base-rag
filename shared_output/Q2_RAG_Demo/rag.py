@@ -20,8 +20,8 @@ def main() -> None:
                 f"{item.rank}. [{item.chunk.chunk_id}] semantic={semantic} "
                 f"bm25={bm25} hybrid={item.hybrid_score:.5f} section={item.chunk.section}"
             )
+            print(item.chunk.text)
 
 
 if __name__ == "__main__":
     main()
-

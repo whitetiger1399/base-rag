@@ -17,6 +17,7 @@ def main() -> None:
         workbooks,
         target_chars=SETTINGS.chunk_target_chars,
         max_chars=SETTINGS.chunk_max_chars,
+        overlap_paragraphs=SETTINGS.chunk_overlap_paragraphs,
     )
     count = write_chunks(chunks, args.output)
     print(f"Wrote {count} chunks from {len(workbooks)} workbooks to {args.output}")
@@ -24,4 +25,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

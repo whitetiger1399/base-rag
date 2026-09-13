@@ -45,6 +45,7 @@ class GraphState:
     cited_ids: List[str] = field(default_factory=list)
     abstain_reason: str = ""
     trace: List[Dict[str, Any]] = field(default_factory=list)
+    max_retries: int = MAX_RETRIES
 
     def __post_init__(self) -> None:
         if not self.active_query:
@@ -93,6 +94,8 @@ def retrieval_node(state: GraphState, retriever: Retriever, k: int = 4) -> Graph
 
 def safety_node(state: GraphState) -> GraphState:
     """Quarantine retrieved chunks that contain prompt-injection indicators."""
+    state.safe_chunks = []
+    state.quarantined_ids = []
     for chunk in state.retrieved_chunks:
         chunk_id = str(chunk.get("chunk_id", "unknown"))
         if detect_prompt_injection(str(chunk.get("text", ""))):
@@ -144,10 +147,13 @@ def route_after_verification(state: GraphState, max_retries: int = MAX_RETRIES) 
         and set(state.approved_ids).issubset(allowed)
     ):
         return Route.ANSWER
+    if state.verifier_verdict not in {"sufficient", "insufficient", "unsafe"}:
+        state.abstain_reason = "malformed verifier verdict"
+        return Route.ABSTAIN
     if state.verifier_verdict == "unsafe":
         state.abstain_reason = "unsafe request or evidence"
         return Route.ABSTAIN
-    if state.retry_count < max_retries and state.refined_query:
+    if state.retry_count < max_retries and state.refined_query != state.active_query:
         state.retry_count += 1
         state.active_query = state.refined_query
         return Route.RETRIEVE
@@ -176,6 +182,12 @@ def answer_node(state: GraphState, answerer: Answerer) -> GraphState:
     return state
 
 
+# Assignment-facing aliases keep the graph contract readable in integrations.
+retrieve_node = retrieval_node
+verify_node = verification_node
+verify_node = verification_node
+
+
 def abstain_node(state: GraphState) -> GraphState:
     state.answer = ABSTAIN_MESSAGE
     state.cited_ids = []
@@ -192,7 +204,10 @@ def run_graph(
     max_retries: int = MAX_RETRIES,
 ) -> GraphState:
     """Execute graph edges until Answerer or Abstain reaches END."""
+    if max_retries < 0:
+        raise ValueError("max_retries must be non-negative")
     state = GraphState(original_query=query, filters=dict(filters or {}))
+    state.max_retries = max_retries
     route = Route.RETRIEVE
 
     while route is not Route.END:
@@ -215,4 +230,3 @@ def run_graph(
             raise RuntimeError(f"Unhandled graph route: {route}")
 
     return state
-

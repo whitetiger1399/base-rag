@@ -36,7 +36,9 @@ class BM25Index:
         self.average_length = sum(lengths) / max(1, len(lengths))
 
     @classmethod
-    def build(cls, chunks: Sequence[Chunk]) -> "BM25Index":
+    def build(
+        cls, chunks: Sequence[Chunk], k1: float = 1.5, b: float = 0.75
+    ) -> "BM25Index":
         term_frequencies: List[Dict[str, int]] = []
         document_frequencies: Counter = Counter()
         lengths: List[int] = []
@@ -45,7 +47,7 @@ class BM25Index:
             term_frequencies.append(dict(frequencies))
             document_frequencies.update(frequencies.keys())
             lengths.append(sum(frequencies.values()))
-        return cls(chunks, term_frequencies, document_frequencies, lengths)
+        return cls(chunks, term_frequencies, document_frequencies, lengths, k1=k1, b=b)
 
     def score(self, query: str, index: int) -> float:
         query_terms = set(tokenize(query))
@@ -104,4 +106,3 @@ class BM25Index:
             payload["k1"],
             payload["b"],
         )
-

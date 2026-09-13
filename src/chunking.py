@@ -132,8 +132,13 @@ def chunk_booklet(
     path: Path,
     target_chars: int = 1_800,
     max_chars: int = 2_600,
+    overlap_paragraphs: int = 1,
 ) -> List[Chunk]:
     """Chunk one workbook without crossing detected section boundaries."""
+    if target_chars < 1 or target_chars > max_chars:
+        raise ValueError("target_chars must be positive and <= max_chars")
+    if overlap_paragraphs < 0:
+        raise ValueError("overlap_paragraphs must be non-negative")
     rows = load_booklet_rows(path)
     chunks: List[Chunk] = []
     section = "Document introduction"
@@ -147,7 +152,7 @@ def chunk_booklet(
             chunks.append(_emit_chunk(path, section, pending, sequence))
             sequence += 1
             # Preserve one paragraph of local context between long-section chunks.
-            pending = pending[-1:] if pending_chars >= max_chars else []
+            pending = pending[-overlap_paragraphs:] if pending_chars >= target_chars else []
             pending_chars = sum(len(text) for _, text in pending)
 
     expanded_rows = [
@@ -185,10 +190,11 @@ def chunk_documents(
     paths: Iterable[Path],
     target_chars: int = 1_800,
     max_chars: int = 2_600,
+    overlap_paragraphs: int = 1,
 ) -> List[Chunk]:
     chunks: List[Chunk] = []
     for path in sorted(Path(item) for item in paths):
-        chunks.extend(chunk_booklet(path, target_chars, max_chars))
+        chunks.extend(chunk_booklet(path, target_chars, max_chars, overlap_paragraphs))
     return chunks
 
 

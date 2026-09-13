@@ -1,0 +1,9 @@
+{
+  "chunk_count": 1036,
+  "chunk_id_sha256": "d61c4bff3d29c6ea72c41fc7a5dcc0b9114027bc7a33b197a35555765fe7b4a1",
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "collection_name": "malawi_ids_guidelines",
+  "rrf_constant": 60.0,
+  "bm25_k1": 1.5,
+  "bm25_b": 0.75
+}

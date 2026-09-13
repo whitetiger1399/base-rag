@@ -14,6 +14,8 @@ BM25 retrieval, reciprocal-rank fusion, and Ollama `qwen3:8b` generation.
 - Exact `cannot find in sources` abstention behavior
 - Streamlit interface and command-line interface
 - Trace mode with rank, semantic similarity, BM25 score, and source text
+- Validated configuration with `MALAWI_RAG_*` environment overrides
+- Versioned golden set and retrieval metrics under the Q3 deliverable
 
 ## Setup
 
@@ -32,6 +34,15 @@ Use `requirements.txt` when resolving compatible dependency updates; use
 
 The embedding model is downloaded once by `sentence-transformers`, then runs
 locally. Ollama must be running at `http://127.0.0.1:11434`.
+Indexing uses the cached local model by default; set
+`MALAWI_RAG_EMBEDDING_LOCAL_FILES_ONLY=false` for the first model download.
+
+Selected settings can be overridden without editing source, for example:
+
+```bash
+export MALAWI_RAG_ANSWER_TOP_K=6
+export MALAWI_RAG_MAX_ANSWER_TOKENS=360
+```
 
 ## Build the indexes
 
@@ -43,9 +54,9 @@ python index.py
 By default, ingestion reads `Task2_dataset1/MWTGBookletsExcel/*.xlsx` and writes
 generated indexes under `storage/`.
 
-The source dataset and generated indexes are intentionally excluded from Git.
-Place the six supplied `TG Booklet *.xlsx` files in
-`Task2_dataset1/MWTGBookletsExcel/`, then run both commands above.
+The source dataset and generated indexes are included in this repository for a
+reproducible assignment review. Rebuild them after changing chunking or model
+settings; `storage/manifest.json` records the corpus and index parameters.
 
 ## Run
 

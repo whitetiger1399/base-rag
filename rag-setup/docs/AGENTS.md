@@ -321,6 +321,31 @@ Chroma/BM25 appear in the proposed layout; they have not been implemented.
 
 ## 8. Progress and Validation
 
+### 2026-09-13 — Action-plan implementation completed except deferred media
+
+| Work item | Status | Evidence / limitation |
+| --- | --- | --- |
+| Configuration and parameterization | Completed | Validated `Settings`, `MALAWI_RAG_*` overrides, generation budgets, retrieval/RRF/BM25 controls, filter allow-list, and manifest path. |
+| Citation/context safety | Completed | Context selection preserves source blocks and derives the citation allow-list from included evidence; malformed and unknown bracketed references are rejected. |
+| Q2 demo evidence | Completed except media | Ten observed outputs recorded; three multi-citation answers and three abstentions included. Screenshots/video intentionally deferred by the user. |
+| Q3 golden set and metrics | Completed | Added versioned 18-item `golden_set.json`, metric helper, evaluation addendum, and tests for Recall@k, Hit@k, full-evidence recall, and MRR. |
+| Q3/Q4 snippet alignment | Completed | Approved-evidence enforcement, unsafe/malformed verdict handling, no-progress routing, idempotent safety filtering, aliases, and retry validation added. |
+| Code structure | Completed | Added reusable guardrail/evaluation modules and injected retriever/answer-generator dependencies while retaining thin assignment entry points. |
+| Validation | Completed | Twelve tests pass; targeted Q3/Q4 smoke tests pass; local Ollama produced the added demo outputs. |
+
+### 2026-09-13 — Index artifacts synchronized with chunking configuration
+
+- **Completed:** Re-ran ingestion with the explicit one-paragraph overlap and
+  produced 1,036 chunks from the six workbooks.
+- **Completed:** Rebuilt Chroma and BM25 artifacts offline with the cached local
+  embedding model and wrote the matching `storage/manifest.json`.
+- **Completed:** Copied the synchronized chunks, indexes, manifest, and source
+  modules into `shared_output/Q2_RAG_Demo/`.
+- **Completed:** Recaptured the ten Q2 demo outputs against the current
+  1,036-chunk manifest and updated both demo records. The long One Health answer
+  is explicitly marked as output-token limited; the deterministic fallback
+  validator was also exercised on the Chikungunya/diabetes comparison.
+
 ### 2026-09-12 — Q4 graph-based multi-agent RAG completed
 
 | Work item | Status | Evidence / limitation |
@@ -440,6 +465,17 @@ Packaged deliverable path: `shared_output/Q2_RAG_Demo/`.
 - Select retrieval and abstention parameters using evidence from evaluation.
 
 ## 10. Activity Log
+
+### 2026-09-13 — Action-plan implementation session
+
+- Implemented the authorized review backlog while leaving Q2 screenshots/video
+  deferred at the user's request.
+- Added validated configuration, bounded generation context, citation checks,
+  retrieval/index parameters, reusable guardrail/evaluation modules, a concrete
+  golden set, and graph/snippet alignment.
+- Captured and documented the remaining real local Q2 runs; updated the root and
+  standalone package from the same source modules.
+- Validation completed with nine automated tests and targeted Q3/Q4 smoke tests.
 
 ### 2026-09-12 — Q4 graph workflow session
 

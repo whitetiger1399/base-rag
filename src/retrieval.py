@@ -35,14 +35,29 @@ class HybridRetriever:
             return None
         return clauses[0] if len(clauses) == 1 else {"$and": clauses}
 
+    def _validate_filters(self, filters: Optional[Mapping[str, str]]) -> Mapping[str, str]:
+        normalized = dict(filters or {})
+        unknown = set(normalized).difference(self.settings.allowed_filter_fields)
+        if unknown:
+            raise ValueError(f"Unsupported retrieval filters: {sorted(unknown)}")
+        return {key: value for key, value in normalized.items() if value not in (None, "")}
+
     def retrieve(
         self,
         query: str,
         filters: Optional[Mapping[str, str]] = None,
         k: Optional[int] = None,
     ) -> List[RetrievedChunk]:
-        k = k or self.settings.answer_top_k
-        candidate_k = max(self.settings.retrieval_candidates, k * 3)
+        if not query or not query.strip():
+            raise ValueError("query must not be empty")
+        k = self.settings.answer_top_k if k is None else k
+        if k < 1:
+            raise ValueError("k must be at least 1")
+        filters = self._validate_filters(filters)
+        candidate_k = max(
+            self.settings.retrieval_candidates,
+            k * self.settings.candidate_multiplier,
+        )
         query_embedding = self.encoder.encode([query], normalize_embeddings=True)[0]
         vector = self.collection.query(
             query_embeddings=[query_embedding.tolist()],
@@ -56,7 +71,7 @@ class HybridRetriever:
         semantic_scores: Dict[str, float] = {}
         bm25_scores: Dict[str, float] = {}
         fused: Dict[str, float] = defaultdict(float)
-        rrf_constant = 60.0
+        rrf_constant = self.settings.rrf_constant
 
         ids = vector.get("ids", [[]])[0]
         documents = vector.get("documents", [[]])[0]
