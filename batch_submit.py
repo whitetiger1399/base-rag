@@ -64,10 +64,21 @@ def reference_documents(response) -> str:
     return ", ".join(documents)
 
 
-def submission_rows(questions: Iterable[Mapping[str, str]], rag: MalawiRAG, top_k: int | None):
-    for row in questions:
+def submission_rows(
+    questions: Iterable[Mapping[str, str]],
+    rag: MalawiRAG,
+    top_k: int | None,
+    total: int,
+):
+    for number, row in enumerate(questions, start=1):
         question_id = row["ID"].strip()
         question = row["Question Text"].strip()
+        percentage = number / total * 100 if total else 100
+        print(
+            f"\rProcessing test question {number}/{total} ({percentage:5.1f}%) — {question_id}",
+            end="",
+            flush=True,
+        )
         response = rag.ask(question, k=top_k)
         values = {
             "keywords": question_keywords(question),
@@ -94,7 +105,8 @@ def main() -> None:
     with args.output.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=["ID", "Target"])
         writer.writeheader()
-        writer.writerows(submission_rows(questions, rag, args.top_k))
+        writer.writerows(submission_rows(questions, rag, args.top_k, len(questions)))
+    print()
     print(f"Wrote {len(questions)} questions ({len(questions) * 4} submission rows) to {args.output}")
 
 
