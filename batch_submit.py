@@ -70,6 +70,7 @@ def submission_rows(
     rag: MalawiRAG,
     top_k: int | None,
     total: int,
+    flush_handle=None,
 ):
     for number, row in enumerate(questions, start=1):
         question_id = row["ID"].strip()
@@ -89,6 +90,8 @@ def submission_rows(
         }
         for suffix in values:
             yield {"ID": f"{question_id}_{suffix}", "Target": values[suffix]}
+        if flush_handle is not None:
+            flush_handle.flush()
 
 
 def main() -> None:
@@ -106,7 +109,10 @@ def main() -> None:
     with output.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=["ID", "Target"])
         writer.writeheader()
-        writer.writerows(submission_rows(questions, rag, args.top_k, len(questions)))
+        handle.flush()
+        writer.writerows(
+            submission_rows(questions, rag, args.top_k, len(questions), handle)
+        )
     print()
     print(f"Wrote {len(questions)} questions ({len(questions) * 4} submission rows) to {output}")
 

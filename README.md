@@ -74,6 +74,8 @@ The batch limit is configured in `src/config.py` with
 `batch_max_questions = 10`. To generate a submission-format batch, run
 `python batch_submit.py`. By default it creates
 `shared_output/Q2_RAG_Demo/test_submission_YYYY_MM_DD_HH_MM_SS.csv`.
+Results are flushed after each completed test question, so the file is updated
+incrementally during the run.
 
 ## Answer policy
 

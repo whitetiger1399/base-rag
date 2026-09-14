@@ -78,6 +78,8 @@ from the question, and derives paragraph/document fields from retrieved chunks.
 It processes the number configured by `Settings.batch_max_questions` (10 by
 default) and creates a timestamped `test_submission_YYYY_MM_DD_HH_MM_SS.csv`
 file. `--top-k`, `--test-csv`, and `--output` remain configurable.
+Each completed test question is flushed to the CSV immediately, so partial
+results remain available while a longer run is still processing.
 
 For a CLI query with retrieval evidence:
 
