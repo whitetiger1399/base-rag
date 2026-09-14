@@ -72,7 +72,8 @@ python rag.py "What is community-based surveillance?" --trace
 
 The batch limit is configured in `src/config.py` with
 `batch_max_questions = 10`. To generate a submission-format batch, run
-`python batch_submit.py --output shared_output/Q2_RAG_Demo/test_submission_first10.csv`.
+`python batch_submit.py`. By default it creates
+`shared_output/Q2_RAG_Demo/test_submission_YYYY_MM_DD_HH_MM_SS.csv`.
 
 ## Answer policy
 

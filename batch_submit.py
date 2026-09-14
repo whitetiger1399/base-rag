@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import csv
 import re
+from datetime import datetime
 from pathlib import Path
 from typing import Iterable, List, Mapping
 
@@ -93,18 +94,21 @@ def submission_rows(
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run Test.csv through local Malawi RAG")
     parser.add_argument("--test-csv", type=Path, default=SETTINGS.dataset_dir.parent / "Test.csv")
-    parser.add_argument("--output", type=Path, default=Path("shared_output/Q2_RAG_Demo/test_submission.csv"))
+    parser.add_argument("--output", type=Path, default=None)
     parser.add_argument("--top-k", type=int, default=None)
     args = parser.parse_args()
     questions = read_questions(args.test_csv, SETTINGS.batch_max_questions)
     rag = MalawiRAG()
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    with args.output.open("w", newline="", encoding="utf-8") as handle:
+    output = args.output or Path("shared_output/Q2_RAG_Demo") / (
+        f"test_submission_{datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}.csv"
+    )
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with output.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=["ID", "Target"])
         writer.writeheader()
         writer.writerows(submission_rows(questions, rag, args.top_k, len(questions)))
     print()
-    print(f"Wrote {len(questions)} questions ({len(questions) * 4} submission rows) to {args.output}")
+    print(f"Wrote {len(questions)} questions ({len(questions) * 4} submission rows) to {output}")
 
 
 if __name__ == "__main__":
