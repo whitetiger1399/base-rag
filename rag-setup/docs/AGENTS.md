@@ -585,6 +585,15 @@ Packaged deliverable path: `shared_output/Q2_RAG_Demo/`.
 - Verified Streamlit startup and HTTP response, then stopped the test server.
 - Packaged the current runnable state under `shared_output/Q2_RAG_Demo/`.
 
+### 2026-09-14 — Documentation correction pass
+
+- **Completed:** Refreshed current Q1/Q2/Q3 documentation with the 1,036-chunk
+  corpus and corrected Recall@4 wording; Q1/Q3 Word and PDF companions were
+  updated in place while preserving their structure.
+- **Limitation:** DOCX rendering could not run because `soffice` is absent.
+  Historical 787-chunk references remain as dated evidence of the earlier corpus,
+  not as current project statistics.
+
 ### 2026-09-10 — Session history
 
 - Read the assignment at the user's request without producing a summary then.

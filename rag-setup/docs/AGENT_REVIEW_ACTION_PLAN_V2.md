@@ -212,3 +212,14 @@ Created a new review from assignment text, current code, submitted artifacts, pa
   remove stale prose and metric definitions. Golden-set split/annotation audit,
   failure-safe index activation, and clean-install/live end-to-end validation
   remain open. Q2 screenshots/video remain explicitly deferred.
+
+### 2026-09-14 — Documentation correction pass
+
+- **Completed:** Updated Q1 retrieval PDF/DOCX to report the current 1,036 chunks
+  and 4,868-character maximum, with the six-chunk operating point. Updated Q3
+  PDF/DOCX Recall@4 wording to distinguish set-based recall from Hit@4. Refreshed
+  both Q2 design copies and corrected answerable-comparison labels in both demos.
+- **Validation:** Active documentation no longer contains superseded 787, 1,593,
+  2,663, or four-chunk statements outside historical review logs. DOCX rendering
+  was attempted with the prescribed renderer; `soffice` is unavailable here, so
+  visual Word QA could not run.
