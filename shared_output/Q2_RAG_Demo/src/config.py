@@ -36,7 +36,7 @@ class Settings:
     generation_temperature: float = 0.1
     generation_context_tokens: int = 4_096
     index_batch_size: int = 64
-    batch_max_questions: int = 10
+    batch_max_questions: int = 500
     allowed_filter_fields: tuple[str, ...] = field(
         default=("doc_id", "source_file", "section", "topic")
     )
