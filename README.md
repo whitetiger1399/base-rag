@@ -70,9 +70,9 @@ For a CLI query with retrieval evidence:
 python rag.py "What is community-based surveillance?" --trace
 ```
 
-To generate a SampleSubmission-format batch for a selected number of test
-questions, run `python batch_submit.py --max-questions 10 --output
-shared_output/Q2_RAG_Demo/test_submission_first10.csv`.
+The batch limit is configured in `src/config.py` with
+`batch_max_questions = 10`. To generate a submission-format batch, run
+`python batch_submit.py --output shared_output/Q2_RAG_Demo/test_submission_first10.csv`.
 
 ## Answer policy
 

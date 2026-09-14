@@ -70,14 +70,13 @@ Run a parameterized prefix of `Test.csv` and write rows matching
 `SampleSubmission.csv` (`ID`, `Target`):
 
 ```bash
-python batch_submit.py --max-questions 10 \
-  --output test_submission_first10.csv
+python batch_submit.py --output test_submission_first10.csv
 ```
 
 The script generates the answer with local Ollama `qwen3:8b`, derives keywords
 from the question, and derives paragraph/document fields from retrieved chunks.
-Use `--max-questions` to choose the number of test questions; omit it to process
-the full test file. `--top-k`, `--test-csv`, and `--output` are also configurable.
+It processes the number configured by `Settings.batch_max_questions` (10 by
+default). `--top-k`, `--test-csv`, and `--output` remain configurable.
 
 For a CLI query with retrieval evidence:
 

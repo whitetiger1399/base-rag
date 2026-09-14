@@ -94,12 +94,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Run Test.csv through local Malawi RAG")
     parser.add_argument("--test-csv", type=Path, default=SETTINGS.dataset_dir.parent / "Test.csv")
     parser.add_argument("--output", type=Path, default=Path("shared_output/Q2_RAG_Demo/test_submission.csv"))
-    parser.add_argument("--max-questions", type=int, default=None, help="maximum questions to process")
     parser.add_argument("--top-k", type=int, default=None)
     args = parser.parse_args()
-    if args.max_questions is not None and args.max_questions < 1:
-        raise SystemExit("--max-questions must be positive")
-    questions = read_questions(args.test_csv, args.max_questions)
+    questions = read_questions(args.test_csv, SETTINGS.batch_max_questions)
     rag = MalawiRAG()
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("w", newline="", encoding="utf-8") as handle:

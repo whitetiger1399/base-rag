@@ -36,6 +36,7 @@ class Settings:
     generation_temperature: float = 0.1
     generation_context_tokens: int = 4_096
     index_batch_size: int = 64
+    batch_max_questions: int = 10
     allowed_filter_fields: tuple[str, ...] = field(
         default=("doc_id", "source_file", "section", "topic")
     )
@@ -43,7 +44,7 @@ class Settings:
     def __post_init__(self) -> None:
         if self.answer_top_k < 1 or self.retrieval_candidates < 1:
             raise ValueError("retrieval counts must be positive")
-        if self.candidate_multiplier < 1 or self.index_batch_size < 1:
+        if self.candidate_multiplier < 1 or self.index_batch_size < 1 or self.batch_max_questions < 1:
             raise ValueError("candidate multiplier and index batch size must be positive")
         if not math.isfinite(self.rrf_constant) or self.rrf_constant <= 0:
             raise ValueError("rrf_constant must be a positive finite number")
