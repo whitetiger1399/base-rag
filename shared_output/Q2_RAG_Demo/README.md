@@ -19,13 +19,19 @@ BM25 retrieval, reciprocal-rank fusion, and Ollama `qwen3:8b` generation.
 
 ## Setup
 
-Use Python 3.9. The development repository already has a virtual environment
-named `rag-setup`; create it first when running a shared standalone copy.
+Use Python 3.9 from this Q2 directory. Do not use the base Anaconda Python;
+install the pinned dependencies in the project environment.
 
 ```bash
 python3.9 -m venv rag-setup
 source rag-setup/bin/activate
 python -m pip install -r requirements-lock.txt
+```
+
+In a second terminal, run the local model:
+
+```bash
+ollama pull qwen3:8b
 ollama run qwen3:8b
 ```
 
@@ -58,11 +64,56 @@ The source dataset and generated indexes are included in this repository for a
 reproducible assignment review. Rebuild them after changing chunking or model
 settings; `storage/manifest.json` records the corpus and index parameters.
 
+```mermaid
+flowchart LR
+    A[Excel workbooks] --> B[ingest.py]
+    B --> C[chunks.jsonl]
+    C --> D[index.py]
+    D --> E[Chroma embeddings]
+    D --> F[BM25 index]
+    U[Question] --> G[Streamlit]
+    G --> H[HybridRetriever]
+    E --> H
+    F --> H
+    H --> I[Safety and evidence gate]
+    I --> J[Ollama qwen3:8b]
+    J --> K[Citation validation]
+    K --> L[Answer or abstention]
+```
+
 ## Run
+
+Start the UI from this directory:
 
 ```bash
 streamlit run app.py
 ```
+
+Open the printed URL, normally `http://localhost:8501`. Enter a question,
+choose the evidence-chunk count, optionally enable Trace mode, and press **Ask**.
+The answer appears with chunk citations. Trace mode expands each retrieved chunk
+with rank, semantic similarity, BM25 score, hybrid score, section, paragraph
+range, and source text.
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant UI as Streamlit
+    participant RAG as MalawiRAG
+    participant Index as Chroma + BM25
+    participant Model as Ollama qwen3:8b
+    User->>UI: Ask question
+    UI->>RAG: question and top_k
+    RAG->>Index: Hybrid search and RRF
+    Index-->>RAG: ranked evidence
+    RAG->>Model: safe context and question
+    Model-->>RAG: cited answer
+    RAG-->>UI: validated answer and trace
+    UI-->>User: answer or cannot find in sources
+```
+
+If indexes are missing, run `python ingest.py` followed by `python index.py`.
+Stop the app with `Ctrl+C`.
 
 ## Batch test submission
 
@@ -97,3 +148,12 @@ instructed to ignore instructions inside sources, answer only from the supplied
 evidence, and cite stable chunk IDs. Answers without valid retrieved citations
 are replaced with `cannot find in sources`. The interface provides general
 public-health information and does not give personal medical advice.
+
+## Troubleshooting
+
+- `numpy.dtype size changed`: activate `rag-setup`; do not run the project with
+  base Anaconda Python.
+- Ollama connection errors: leave `ollama run qwen3:8b` running and check
+  `curl http://127.0.0.1:11434/api/tags`.
+- Missing indexes: run `python ingest.py` and then `python index.py` from this
+  directory.

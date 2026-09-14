@@ -19,13 +19,28 @@ BM25 retrieval, reciprocal-rank fusion, and Ollama `qwen3:8b` generation.
 
 ## Setup
 
-Use Python 3.9. The development repository already has a virtual environment
-named `rag-setup`; create it first when running a shared standalone copy.
+Use Python 3.9 and run the commands from the repository root. Do not use the
+base Anaconda Python for this project; the pinned NumPy, PyTorch, and
+scikit-learn wheels must be installed in `rag-setup`.
+
+Prerequisites:
+
+- Python 3.9
+- Ollama installed and available on `PATH`
+- At least 8 GB of free disk space for the embedding/model artifacts
+
+Create the environment and install dependencies:
 
 ```bash
 python3.9 -m venv rag-setup
 source rag-setup/bin/activate
 python -m pip install -r requirements-lock.txt
+```
+
+In a second terminal, start the local model and leave it running:
+
+```bash
+ollama pull qwen3:8b
 ollama run qwen3:8b
 ```
 
@@ -58,11 +73,87 @@ The source dataset and generated indexes are included in this repository for a
 reproducible assignment review. Rebuild them after changing chunking or model
 settings; `storage/manifest.json` records the corpus and index parameters.
 
+The two commands are separate by design: `ingest.py` creates normalized chunks,
+then `index.py` converts those chunks into Chroma embeddings and a BM25 index.
+Run both again after changing chunking settings.
+
+## Runtime flow
+
+```mermaid
+flowchart LR
+    A[Excel workbooks] --> B[ingest.py]
+    B --> C[chunks.jsonl]
+    C --> D[index.py]
+    D --> E[Chroma embeddings]
+    D --> F[BM25 index]
+    U[User question] --> G[Streamlit app]
+    G --> H[HybridRetriever]
+    E --> H
+    F --> H
+    H --> I[Evidence and safety gate]
+    I --> J[Ollama qwen3:8b]
+    J --> K[Citation validation]
+    K --> L[Answer or cannot find in sources]
+```
+
 ## Run
+
+Launch the Streamlit application after activating `rag-setup`:
 
 ```bash
 streamlit run app.py
 ```
+
+Open the URL printed by Streamlit, usually `http://localhost:8501`.
+
+The page contains:
+
+- A question text box
+- An **Evidence chunks** slider
+- A **Trace mode** toggle
+- An **Ask** button
+- The cited answer area
+- Expandable retrieval results showing rank, semantic similarity, BM25 score,
+  hybrid score, section, paragraph range, and source text
+
+Expected interaction:
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant UI as Streamlit UI
+    participant RAG as MalawiRAG
+    participant Search as Chroma + BM25
+    participant LLM as Ollama qwen3:8b
+    User->>UI: Enter question and click Ask
+    UI->>RAG: ask(question, top_k)
+    RAG->>Search: Hybrid retrieval and RRF fusion
+    Search-->>RAG: Ranked chunks and scores
+    RAG->>RAG: Safety and evidence gate
+    RAG->>LLM: Question plus safe source blocks
+    LLM-->>RAG: Cited draft answer
+    RAG-->>UI: Validated answer and trace
+    UI-->>User: Answer, citations, and expandable evidence
+```
+
+If the evidence gate fails or citations are invalid, the UI displays exactly:
+
+```text
+cannot find in sources
+```
+
+Stop Streamlit with `Ctrl+C`.
+
+## CLI smoke test
+
+Use the CLI to verify the same RAG pipeline without Streamlit:
+
+```bash
+rag-setup/bin/python rag.py "What is community-based surveillance?" --trace
+```
+
+The trace prints the answer followed by retrieved chunk IDs, ranks, scores,
+sections, and source text.
 
 For a CLI query with retrieval evidence:
 
@@ -84,3 +175,14 @@ instructed to ignore instructions inside sources, answer only from the supplied
 evidence, and cite stable chunk IDs. Answers without valid retrieved citations
 are replaced with `cannot find in sources`. The interface provides general
 public-health information and does not give personal medical advice.
+
+## Troubleshooting
+
+- `numpy.dtype size changed`: the command is using base Anaconda Python. Activate
+  `rag-setup` and run `python -c "import numpy; print(numpy.__version__)"`.
+- `Connection refused` or a timeout on port 11434: start `ollama run qwen3:8b`
+  and confirm `curl http://127.0.0.1:11434/api/tags` returns JSON.
+- `Missing ... chunks.jsonl` or collection errors: run `python ingest.py` and
+  then `python index.py` from the repository root.
+- Slow first query: the embedding model and qwen3 model may be loading locally;
+  later queries reuse the loaded services.
