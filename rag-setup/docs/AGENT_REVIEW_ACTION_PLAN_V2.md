@@ -223,3 +223,10 @@ Created a new review from assignment text, current code, submitted artifacts, pa
   2,663, or four-chunk statements outside historical review logs. DOCX rendering
   was attempted with the prescribed renderer; `soffice` is unavailable here, so
   visual Word QA could not run.
+
+### 2026-09-14 — Chunking explanation added
+
+- **Completed:** Documented that workbook rows are merged into section-bounded
+  retrieval chunks, empty rows are skipped, oversized rows are sentence-split,
+  and paragraph ranges preserve provenance. Added the TG Booklet 3 example of
+  approximately 2,064 source entries producing 213 chunks in both Q2 design copies.

@@ -24,6 +24,17 @@ Chunks never cross detected sections. Each chunk stores:
 - `paragraph_start` and `paragraph_end`
 - normalized source `text`
 
+### Row-to-chunk behavior
+
+Workbook rows are input records, not one-to-one chunks. Empty rows are skipped,
+and consecutive small rows in the same section are joined with newline separators
+until the target size is reached. A heading starts a new section; an oversized row
+is split at sentence boundaries. The original paragraph numbers are retained as
+`paragraph_start` and `paragraph_end`, so merged rows remain traceable to the
+source workbook. For example, TG Booklet 3 has about 2,064 source entries and
+produces 213 retrieval chunks. This reduces retrieval fragmentation while keeping
+section context and citation provenance.
+
 ## Retrieval
 
 The vector path uses normalized `all-MiniLM-L6-v2` embeddings in a persistent
