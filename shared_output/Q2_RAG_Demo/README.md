@@ -81,6 +81,9 @@ file. `--top-k`, `--test-csv`, and `--output` remain configurable.
 Each completed test question is flushed to the CSV immediately, so partial
 results remain available while a longer run is still processing.
 
+For a visual explanation of the complete ingestion, indexing, retrieval, Ollama,
+and citation flow, see `docs/RAG_FLOW_EXPLAINED.pdf`.
+
 For a CLI query with retrieval evidence:
 
 ```bash
