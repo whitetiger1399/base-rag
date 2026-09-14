@@ -70,6 +70,10 @@ For a CLI query with retrieval evidence:
 python rag.py "What is community-based surveillance?" --trace
 ```
 
+To generate a SampleSubmission-format batch for a selected number of test
+questions, run `python batch_submit.py --max-questions 10 --output
+shared_output/Q2_RAG_Demo/test_submission_first10.csv`.
+
 ## Answer policy
 
 Retrieved workbook content is treated as untrusted reference data. The model is
