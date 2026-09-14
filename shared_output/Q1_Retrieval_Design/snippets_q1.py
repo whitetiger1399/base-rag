@@ -19,6 +19,7 @@ def chunk_documents(docs: Iterable[Path]) -> list[Chunk]:
         docs,
         target_chars=SETTINGS.chunk_target_chars,
         max_chars=SETTINGS.chunk_max_chars,
+        overlap_paragraphs=SETTINGS.chunk_overlap_paragraphs,
     )
 
 
@@ -40,4 +41,3 @@ def retrieve(
     if _db is None:
         _db = HybridRetriever(SETTINGS)
     return _db.retrieve(query=query, filters=filters, k=k)
-

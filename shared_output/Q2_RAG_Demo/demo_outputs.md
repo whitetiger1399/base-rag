@@ -95,7 +95,8 @@ supplies checklist.
 Answer: cannot find in sources
 
 Trace: top semantic 0.680; the evidence gate did not support the comparison.
-Result: correct abstention.
+Result: conservative failure on an answerable comparison; this is retained as
+a regression case and does not count as an unanswerable-question abstention.
 
 ## 8. Chikungunya versus diabetes confirmation
 
@@ -105,7 +106,7 @@ Answer: cannot find in sources
 
 Trace: the post-generation abstention validator rejected a partial comparison
 that contained the abstention phrase. The final returned answer is the exact
-required abstention.
+required abstention; this is retained as an answerable-query failure case.
 
 ## 9. Out-of-domain engine oil
 

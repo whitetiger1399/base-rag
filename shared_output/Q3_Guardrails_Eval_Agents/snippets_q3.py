@@ -86,7 +86,14 @@ def faithfulness_check(
         response = requests.post(f"{OLLAMA_URL}/api/chat", json=payload, timeout=120)
         response.raise_for_status()
         result = json.loads(response.json()["message"]["content"])
-        score = float(result["score"])
+        raw_score = result["score"]
+        if isinstance(raw_score, bool) or not isinstance(raw_score, (int, float)):
+            return 0.0
+        score = float(raw_score)
+        if not 0.0 <= score <= 1.0:
+            return 0.0
+        if result.get("unsupported_claims"):
+            return 0.0
     except (KeyError, TypeError, ValueError, json.JSONDecodeError, requests.RequestException):
         return 0.0
     if not math.isfinite(score):
@@ -122,6 +129,8 @@ def run_agents(
     if detect_prompt_injection(query):
         return {"answer": ABSTAIN_MESSAGE, "abstained": True, "reason": "unsafe query"}
 
+    if max_retries < 0 or not 0.0 <= min_faithfulness <= 1.0:
+        return {"answer": ABSTAIN_MESSAGE, "abstained": True, "reason": "invalid policy configuration"}
     while state.retries <= max_retries:
         retrieved = [dict(chunk) for chunk in retriever(state.active_query)]
         state.safe_chunks = []
@@ -188,6 +197,14 @@ def run_agents(
                 refined = ""
             if refined:
                 state.active_query = refined
+            else:
+                return {
+                    "answer": ABSTAIN_MESSAGE,
+                    "abstained": True,
+                    "reason": "no-progress refinement",
+                    "retries": state.retries,
+                    "quarantined_chunk_ids": state.quarantined_chunk_ids,
+                }
 
         state.retries += 1
 

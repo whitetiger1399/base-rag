@@ -13,8 +13,9 @@ normalizes extraction artifacts while preserving the original booklet and
 paragraph range. Numbered headings, section labels, chapters, annexes, and
 short uppercase labels define section boundaries.
 
-Long sections are divided near 1,800 characters and capped near 2,600 source
-characters. Individual oversized cells are divided at sentence boundaries.
+Long sections target 1,800 characters and split oversized cells at sentence
+boundaries. The current corpus contains 1,036 chunks; chunk size and overlap
+are governed by validated settings and must be checked after each rebuild.
 Chunks never cross detected sections. Each chunk stores:
 
 - `chunk_id`, for example `TG_Booklet_1:p430-p436:c0066`
@@ -30,7 +31,7 @@ Chroma cosine collection. A local BM25 index runs over the same chunks. The two
 ranked lists are combined with reciprocal-rank fusion, which avoids treating
 incompatible cosine and BM25 score ranges as though they were calibrated.
 
-The default answer context uses four chunks, while each retriever produces at
+The default answer context uses six chunks, while each retriever produces at
 least 20 candidates before fusion. Trace mode displays both component scores,
 the fused score, rank, source metadata, and retrieved content.
 
@@ -57,8 +58,9 @@ retrieved set, replacing them with `cannot find in sources`.
 ## Current measured state
 
 - Six workbooks ingested.
-- 787 chunks generated.
-- Chunk length: 56 minimum, 1,593 average, 2,663 maximum including section context.
+- 1,036 chunks generated in the current corpus snapshot.
+- Chunk lengths are validated during ingestion; rebuilds must record the resulting
+  count and manifest before release.
 - Vector and BM25 indexes built successfully.
 - In-domain retrieval and cited Ollama generation verified.
 - Out-of-domain abstention verified.
@@ -66,4 +68,3 @@ retrieved set, replacing them with `cannot find in sources`.
 
 Thresholds are initial engineering defaults. They should be calibrated against
 the assignment golden set before final submission.
-

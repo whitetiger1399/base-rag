@@ -146,19 +146,26 @@ def chunk_booklet(
     pending_chars = 0
     sequence = 1
 
-    def flush() -> None:
+    def flush(retain_overlap: bool = True) -> None:
         nonlocal pending, pending_chars, sequence
         if pending:
             chunks.append(_emit_chunk(path, section, pending, sequence))
             sequence += 1
             # Preserve one paragraph of local context between long-section chunks.
-            pending = pending[-overlap_paragraphs:] if pending_chars >= target_chars else []
+            pending = (
+                pending[-overlap_paragraphs:]
+                if retain_overlap and overlap_paragraphs and pending_chars >= target_chars
+                else []
+            )
             pending_chars = sum(len(text) for _, text in pending)
 
+    body_limit = max_chars - 200
+    if body_limit < 1:
+        raise ValueError("max_chars must leave room for section metadata")
     expanded_rows = [
         (paragraph_number, part)
         for paragraph_number, text in rows
-        for part in split_long_text(text, max_chars - 200)
+        for part in split_long_text(text, body_limit)
     ]
 
     for paragraph_number, text in expanded_rows:
@@ -182,7 +189,7 @@ def chunk_booklet(
         if pending_chars >= target_chars and text.endswith((".", ":", ";")):
             flush()
 
-    flush()
+    flush(retain_overlap=False)
     return chunks
 
 

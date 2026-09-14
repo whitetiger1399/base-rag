@@ -34,6 +34,35 @@ def test_settings_reject_invalid_generation_budget() -> None:
         raise AssertionError("invalid generation budget was accepted")
 
 
+def test_settings_reject_invalid_rrf_constant() -> None:
+    try:
+        Settings(rrf_constant=0)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("invalid RRF constant was accepted")
+
+
+def test_generation_uses_configured_timeout(monkeypatch) -> None:
+    class Response:
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {"message": {"content": "Fact [one:p1-p1:c0001]"}}
+
+    calls = []
+    monkeypatch.setattr(
+        "src.generation.requests.post",
+        lambda *args, **kwargs: calls.append(kwargs) or Response(),
+    )
+    result = RetrievedChunk(
+        Chunk("one:p1-p1:c0001", "evidence", "doc", "doc.xlsx", "s", 1, 1), 1, 0.1
+    )
+    generate_answer("question", [result], Settings(request_timeout_seconds=7))
+    assert calls[0]["timeout"] == 7
+
+
 def test_generation_rejects_mixed_fallback_answer(monkeypatch) -> None:
     class Response:
         def raise_for_status(self):

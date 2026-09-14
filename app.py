@@ -2,6 +2,7 @@ import streamlit as st
 
 from src.generation import ABSTAIN_MESSAGE
 from src.rag import MalawiRAG
+from src.config import SETTINGS
 
 
 st.set_page_config(page_title="Malawi Public Health RAG", page_icon="🇲🇼", layout="wide")
@@ -16,7 +17,7 @@ def load_rag() -> MalawiRAG:
 
 with st.sidebar:
     st.header("Retrieval settings")
-    top_k = st.slider("Evidence chunks", min_value=3, max_value=8, value=4)
+    top_k = st.slider("Evidence chunks", min_value=1, max_value=8, value=SETTINGS.answer_top_k)
     trace = st.toggle("Trace mode", value=True)
     st.info(
         "Answers are public-health information from the supplied guidelines and "

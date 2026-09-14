@@ -47,6 +47,14 @@ Suggested entry format:
 
 ## 3. User Requests and Working Boundaries
 
+### 2026-09-14 — Review v2 requested; documentation only
+
+- **User request:** Re-read the assignment and reassess the implemented v1 action
+  plan, then create a separate v2 review of remaining gaps and code structure.
+- **Confirmed boundary:** Do not implement changes. Exclude Q2 screenshots/video
+  from this review; preserve the previous review and append project history.
+- **Evidence / files:** `rag-setup/docs/AGENT_REVIEW_ACTION_PLAN_V2.md`.
+
 ### 2026-09-12 — Publish complete project contents
 
 - **User request:** Push everything in the project to the configured Git repository.
@@ -321,6 +329,33 @@ Chroma/BM25 appear in the proposed layout; they have not been implemented.
 
 ## 8. Progress and Validation
 
+### 2026-09-14 — v2 review corrects earlier completion assessment
+
+- **Completed:** Created `rag-setup/docs/AGENT_REVIEW_ACTION_PLAN_V2.md` after
+  reading the assignment, current code, PDFs/DOCX text and evaluation artifacts.
+- **Confirmed:** Root and packaged tests each report 12 passing tests. Focused
+  mocked probes nevertheless exposed chunking, timeout, context-budget,
+  Q3 judge and Q4 empty-refinement defects. See v2 for reproducible evidence.
+- **Superseded:** The 2026-09-13 blanket completion assessment is not a current
+  compliance guarantee. Prior fixes remain recognized, but residual defects and
+  stale written deliverables require further work. Demo comparison abstentions
+  must not be counted as corpus-unanswerable successes without qualification.
+- **Confirmed boundary:** Only review documentation changed; no code, indexes,
+  assignment deliverables or v1 content was modified. No live model run or push.
+- **Next action:** Await authorization to implement the v2 backlog.
+
+### 2026-09-14 — v2 implementation authorized and applied
+
+- **Completed:** Implemented the actionable v2 runtime fixes and synchronized
+  the Q2 package: timeout/config validation, chunk overlap/metadata bounds,
+  context accounting, UI/Q1 parameter propagation, Q3 judge/no-progress logic,
+  and Q4 refinement/top-k validation.
+- **Completed:** Refreshed Q2 design statistics and demo labels and added focused
+  regression coverage. Root and packaged tests remain the required validation.
+- **Pending:** PDF/DOCX regeneration, evaluation split/annotation audit,
+  failure-safe index activation, clean-install/live validation, and Q2 media.
+- **Evidence:** See `AGENT_REVIEW_ACTION_PLAN_V2.md` implementation log.
+
 ### 2026-09-13 — Action-plan implementation completed except deferred media
 
 | Work item | Status | Evidence / limitation |
@@ -465,6 +500,12 @@ Packaged deliverable path: `shared_output/Q2_RAG_Demo/`.
 - Select retrieval and abstention parameters using evidence from evaluation.
 
 ## 10. Activity Log
+
+### 2026-09-14 — Documentation-only reassessment
+
+- **Completed:** Added `AGENT_REVIEW_ACTION_PLAN_V2.md` with remaining findings,
+  acceptance criteria, implementation order and review limitations. Preserved v1
+  and appended this record. Q2 screenshots/video were excluded as requested.
 
 ### 2026-09-13 — Action-plan implementation session
 

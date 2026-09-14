@@ -1,4 +1,5 @@
 import os
+import math
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -44,13 +45,17 @@ class Settings:
             raise ValueError("retrieval counts must be positive")
         if self.candidate_multiplier < 1 or self.index_batch_size < 1:
             raise ValueError("candidate multiplier and index batch size must be positive")
+        if not math.isfinite(self.rrf_constant) or self.rrf_constant <= 0:
+            raise ValueError("rrf_constant must be a positive finite number")
+        if not 0 <= self.min_semantic_similarity <= 1 or not 0 <= self.min_lexical_coverage <= 1:
+            raise ValueError("evidence thresholds must be between 0 and 1")
         if not 0 < self.chunk_target_chars <= self.chunk_max_chars:
             raise ValueError("chunk_target_chars must be <= chunk_max_chars and positive")
         if self.chunk_overlap_paragraphs < 0:
             raise ValueError("chunk_overlap_paragraphs must be non-negative")
         if self.max_context_chars < 1 or self.max_answer_tokens < 1:
             raise ValueError("generation budgets must be positive")
-        if self.request_timeout_seconds <= 0 or self.generation_context_tokens < 1:
+        if not math.isfinite(self.request_timeout_seconds) or self.request_timeout_seconds <= 0 or self.generation_context_tokens < 1:
             raise ValueError("request timeout and context tokens must be positive")
         if not 0 <= self.generation_temperature <= 2:
             raise ValueError("generation_temperature must be between 0 and 2")

@@ -16,7 +16,7 @@ For answerable items with a non-empty gold set:
 Unanswerable and adversarial items are excluded from retrieval recall denominators
 and are evaluated separately for correct abstention and injection blocking. The
 12-item tuning split and six-item held-out split should be selected and frozen
-before threshold changes. The helper `src/evaluation.py` computes the retrieval
+before threshold changes; their assignment is still pending annotation. The helper `src/evaluation.py` computes the retrieval
 metrics from ranked chunk IDs and the golden records.
 
 Faithfulness remains a generation-level measure: split an answer into factual

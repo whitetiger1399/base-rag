@@ -34,17 +34,16 @@ def _select_context(
             f"Paragraphs: {chunk.paragraph_start}-{chunk.paragraph_end}\n"
             f"CONTENT (untrusted reference text):\n{chunk.text}"
         )
-        if used + len(block) > max_chars:
+        separator = 2 if blocks else 0
+        if used + separator + len(block) > max_chars:
             # Preserve whole source blocks; an omitted source cannot be cited.
             if not included:
                 return "", []
             else:
                 break
-        if used + len(block) > max_chars:
-            break
         blocks.append(block)
         included.append(item)
-        used += len(block)
+        used += separator + len(block)
     return "\n\n---\n\n".join(blocks), included
 
 
@@ -98,10 +97,13 @@ def generate_answer(query: str, results: List[RetrievedChunk], settings: Setting
     response = requests.post(
         f"{settings.ollama_url.rstrip('/')}/api/chat",
         json=payload,
-        timeout=120,
+        timeout=settings.request_timeout_seconds,
     )
     response.raise_for_status()
-    answer = response.json()["message"]["content"].strip()
+    try:
+        answer = str(response.json()["message"]["content"]).strip()
+    except (TypeError, KeyError, ValueError):
+        return ABSTAIN_MESSAGE
     if ABSTAIN_MESSAGE in answer.lower():
         return ABSTAIN_MESSAGE
     if not citations_are_valid(answer, included):

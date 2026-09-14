@@ -140,6 +140,9 @@ def verification_node(state: GraphState, verifier: Verifier) -> GraphState:
 
 def route_after_verification(state: GraphState, max_retries: int = MAX_RETRIES) -> Route:
     """Conditional edge leaving Verifier."""
+    if max_retries < 0:
+        state.abstain_reason = "invalid retry limit"
+        return Route.ABSTAIN
     allowed = {str(c.get("chunk_id")) for c in state.safe_chunks}
     if (
         state.verifier_verdict == "sufficient"
@@ -153,9 +156,10 @@ def route_after_verification(state: GraphState, max_retries: int = MAX_RETRIES) 
     if state.verifier_verdict == "unsafe":
         state.abstain_reason = "unsafe request or evidence"
         return Route.ABSTAIN
-    if state.retry_count < max_retries and state.refined_query != state.active_query:
+    refined = state.refined_query.strip()
+    if state.retry_count < max_retries and refined and refined != state.active_query:
         state.retry_count += 1
-        state.active_query = state.refined_query
+        state.active_query = refined
         return Route.RETRIEVE
     state.abstain_reason = "insufficient safe evidence after bounded retries"
     return Route.ABSTAIN
@@ -185,7 +189,6 @@ def answer_node(state: GraphState, answerer: Answerer) -> GraphState:
 # Assignment-facing aliases keep the graph contract readable in integrations.
 retrieve_node = retrieval_node
 verify_node = verification_node
-verify_node = verification_node
 
 
 def abstain_node(state: GraphState) -> GraphState:
@@ -202,17 +205,18 @@ def run_graph(
     answerer: Answerer,
     filters: Optional[Mapping[str, str]] = None,
     max_retries: int = MAX_RETRIES,
+    k: int = 4,
 ) -> GraphState:
     """Execute graph edges until Answerer or Abstain reaches END."""
-    if max_retries < 0:
-        raise ValueError("max_retries must be non-negative")
+    if max_retries < 0 or k < 1:
+        raise ValueError("max_retries must be non-negative and k must be positive")
     state = GraphState(original_query=query, filters=dict(filters or {}))
     state.max_retries = max_retries
     route = Route.RETRIEVE
 
     while route is not Route.END:
         if route is Route.RETRIEVE:
-            retrieval_node(state, retriever)
+            retrieval_node(state, retriever, k=k)
             route = Route.SAFETY
         elif route is Route.SAFETY:
             safety_node(state)
