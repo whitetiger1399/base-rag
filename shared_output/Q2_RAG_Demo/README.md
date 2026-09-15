@@ -171,3 +171,16 @@ project environment when a larger evaluation is required.
 See [Ragas setup and commands](docs/RAGAS_EVALUATION.md) for installation, model setup, metrics,
 output paths, the reason for using Ragas, metric definitions, the three-question
 sample, observations, limitations, and the standalone Q2 command.
+
+## Read-only Chroma access
+
+The RAG runtime reads a disposable snapshot through an interface exposing only
+`query()`. The canonical Chroma files must be locked:
+
+```bash
+python scripts/chroma_access.py status
+python scripts/chroma_access.py lock
+```
+
+See the [read-only Chroma policy](docs/READ_ONLY_CHROMA.md) for the security
+boundary and explicit unlock/rebuild/relock workflow.

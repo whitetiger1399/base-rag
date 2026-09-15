@@ -41,6 +41,11 @@ The vector path uses normalized `all-MiniLM-L6-v2` embeddings in a persistent
 Chroma cosine collection. A local BM25 index runs over the same chunks. The two
 ranked lists are combined with reciprocal-rank fusion, which avoids treating
 incompatible cosine and BM25 score ranges as though they were calibrated.
+The canonical Chroma directory is locked read-only for serving. Because
+embedded Chroma needs writable SQLite runtime files, retrieval queries a private
+disposable snapshot through an adapter that exposes only `query()`; it cannot
+persist mutations to the canonical index. See `docs/READ_ONLY_CHROMA.md` for
+deployment commands and limitations.
 
 The default answer context uses six chunks, while each retriever produces at
 least 20 candidates before fusion. Trace mode displays both component scores,

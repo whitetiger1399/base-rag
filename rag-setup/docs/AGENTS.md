@@ -654,6 +654,45 @@ Packaged deliverable path: `shared_output/Q2_RAG_Demo/`.
 - **Validation:** Mocked timeout propagation and existing two budget checks passed.
   No live inference performed.
 
+### 2026-09-15 — Read-only Chroma runtime access
+
+- **User request:** Make the RAG-to-Chroma connection read-only, use a
+  read-only service identity, and document the control against unauthorized
+  access and injection.
+- **Confirmed constraint:** The project uses embedded
+  `chromadb.PersistentClient`, which has no users, service principals, grants,
+  or credential-based RBAC. A fabricated application credential would not be
+  enforced by the database.
+- **Completed:** Added a `rag_reader` runtime policy using filesystem-locked
+  canonical indexes, private disposable Chroma snapshots, and a collection
+  adapter exposing only `query()`. Mutating operations are denied. Added lock,
+  unlock, and status tooling for root and standalone Q2 deployments.
+- **Completed:** Locked both current canonical Chroma directories. A real query
+  through the adapter succeeded and the canonical SQLite SHA-256 remained
+  unchanged (`a4f8e9d96286765c895afee572b1639ebfd34873af71b19c491a128423c4584a`).
+- **Security boundary:** Structured Chroma queries and filter-key allow-listing
+  provide no raw SQL path from questions. Filesystem ownership remains the
+  enforcement identity; stronger service-principal isolation requires an
+  authenticated Chroma/server deployment.
+- **Validation:** Root suite: 23 passed. Standalone Q2 suite: 18 passed.
+- **Evidence:** `src/read_only_chroma.py`, `scripts/chroma_access.py`, and
+  `shared_output/Q2_RAG_Demo/docs/READ_ONLY_CHROMA.md`.
+
+### 2026-09-15 — Read-only Chroma recorded as a Q3 guardrail
+
+- **User request:** Update Q3 to state that read-only database access is an
+  implemented guardrail.
+- **Completed:** Updated the Q3 evaluation addendum, reference snippet, DOCX,
+  and PDF with the query-only adapter, filesystem lock, disposable snapshot,
+  SQL-interface boundary, maintenance workflow, and embedded-Chroma RBAC
+  limitation.
+- **Validation:** Eight focused Q3/read-only tests passed, including the
+  query-only contract. The three-page Q3 PDF was rasterized and every page was
+  visually inspected with no clipping or overlap.
+- **Rendering note:** The prescribed DOCX renderer could not run because
+  LibreOffice/`soffice` is unavailable. The existing ReportLab Q3 renderer was
+  used for the PDF and page-image QA instead.
+
 ### 2026-09-15 — Partial live Ragas run documented
 
 - **User request:** Document why the project uses Ragas, explain its metrics,
@@ -682,3 +721,17 @@ Packaged deliverable path: `shared_output/Q2_RAG_Demo/`.
 - **Confirmed context:** The sample was limited because sustained local Qwen
   inference caused significant MacBook heat. This is documented as a machine
   resource constraint, not an algorithm failure.
+
+### 2026-09-15 — Q3 prompt-injection hardening
+
+- **User request:** Improve the Q3 reference snippet against obfuscated prompt
+  injection, verifier/answerer trust risks, binary faithfulness scoring, and
+  missing security audit signals.
+- **Completed:** Added Unicode and invisible-character normalization, conservative
+  homoglyph/leet folding, compact-pattern checks, an optional semantic detector,
+  an optional non-LLM evidence-similarity gate, structured audit callbacks,
+  deduplicated quarantine IDs, strict answer types/citations, and deterministic
+  fractional claim-support scoring.
+- **Validation:** Added focused tests for homoglyph/leetspeak/symbol/spacing
+  bypasses, semantic-detector failure behavior, fractional faithfulness, chunk
+  quarantine/auditing, and the similarity fallback. All 21 project tests pass.

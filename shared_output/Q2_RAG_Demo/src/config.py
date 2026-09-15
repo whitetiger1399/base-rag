@@ -15,6 +15,7 @@ class Settings:
     bm25_path: Path = PROJECT_ROOT / "storage" / "bm25" / "index.json"
     manifest_path: Path = PROJECT_ROOT / "storage" / "manifest.json"
     collection_name: str = "malawi_ids_guidelines"
+    require_read_only_chroma: bool = True
     embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
     embedding_local_files_only: bool = True
     ollama_model: str = "qwen3:8b"

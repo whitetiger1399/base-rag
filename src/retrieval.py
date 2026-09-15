@@ -1,12 +1,12 @@
 from collections import defaultdict
 from typing import Dict, List, Mapping, Optional, Tuple
 
-import chromadb
 from sentence_transformers import SentenceTransformer
 
 from .bm25 import BM25Index, tokenize
 from .config import Settings
 from .models import Chunk, RetrievedChunk
+from .read_only_chroma import ReadOnlyChromaStore
 
 
 def lexical_coverage(query: str, text: str) -> float:
@@ -22,8 +22,12 @@ class HybridRetriever:
         # Index creation performs the one-time download. Query-time loading is
         # offline-only so a running demo never depends on internet access.
         self.encoder = SentenceTransformer(settings.embedding_model, local_files_only=True)
-        self.client = chromadb.PersistentClient(path=str(settings.chroma_dir))
-        self.collection = self.client.get_collection(settings.collection_name)
+        self.vector_store = ReadOnlyChromaStore(
+            settings.chroma_dir,
+            settings.collection_name,
+            require_locked=settings.require_read_only_chroma,
+        )
+        self.collection = self.vector_store.collection
         self.bm25 = BM25Index.load(settings.bm25_path)
 
     @staticmethod

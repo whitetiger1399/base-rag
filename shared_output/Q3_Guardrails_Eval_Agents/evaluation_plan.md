@@ -26,6 +26,53 @@ abstention precision/recall/F1, and injection block/false-positive rates by coho
 The numeric thresholds in the Q3 PDF are proposed release targets until a labeled
 baseline is recorded.
 
+Prompt-injection defense is layered in `snippets_q3.py`. Security-only text
+normalization applies Unicode compatibility folding, removes invisible combining
+and formatting characters, maps a conservative set of homoglyph/leet variants,
+and checks both word-preserving and compact forms. A dependency-injected semantic
+detector can then identify injection intent not covered by regex; detector errors
+fail closed. Retrieved chunks are screened before the verifier and quarantined by
+ID. An optional non-LLM evidence-similarity callback provides a separate relevance
+gate before the LLM verifier. Only verifier-approved chunks reach the Answerer,
+whose output must be plain text with allow-listed citations and must pass
+claim-support scoring.
+
+The faithfulness response schema records total and supported atomic claims, so a
+partly supported answer receives the deterministic fraction `supported / total`
+instead of being collapsed to zero merely because an unsupported-claims list is
+nonempty. Structured audit callbacks record the detection layer, quarantined
+chunk ID, retry number, evidence-similarity score, cited IDs, and final
+faithfulness score. Raw malicious source text is deliberately excluded from these
+events. The semantic detector and similarity checker remain replaceable local
+components so production deployments can use an independently tested classifier
+and embedding model.
+
+## Implemented read-only retrieval guardrail
+
+The Q2 runtime now protects the canonical Chroma vector index as a read-only
+artifact. `ReadOnlyChromaStore` refuses to start when canonical Chroma files
+carry write permission, copies the locked index to a private disposable runtime
+directory, and gives `HybridRetriever` a collection interface exposing only
+`query()`. Calls to `add`, `upsert`, `update`, `delete`, or `modify` raise
+`PermissionError`. Runtime SQLite activity occurs only in the disposable copy
+and cannot persist to the canonical index. Root and standalone Q2 indexes were
+locked and a real retrieval query left the canonical SQLite SHA-256 unchanged.
+
+This is a defense-in-depth control for database integrity and least privilege.
+Questions never become SQL: they are encoded into vectors, filter keys are
+allow-listed, and Chroma receives structured query arguments. It therefore
+removes a conventional SQL-injection path from the question interface. Source
+prompt injection remains a separate content-layer threat handled by query/chunk
+screening, evidence isolation, verification, and citation checks.
+
+Embedded `chromadb.PersistentClient` has no server-side service principals,
+credentials, grants, or RBAC. The implemented local `rag_reader` identity is
+enforced by operating-system filesystem permissions; no unenforceable secret is
+stored in code. A genuine credential-based service principal would require an
+authenticated Chroma server or managed vector database and a separately
+provisioned read-only role. Operational commands and limitations are documented
+in `shared_output/Q2_RAG_Demo/docs/READ_ONLY_CHROMA.md`.
+
 ## Ragas evaluation
 
 Ragas complements the deterministic Q3 checks by separating retrieval quality

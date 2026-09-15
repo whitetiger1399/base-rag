@@ -200,3 +200,18 @@ project environment when a larger evaluation is required.
 See [Ragas setup and commands](shared_output/Q2_RAG_Demo/docs/RAGAS_EVALUATION.md) for installation, model setup, metrics,
 output paths, the reason for using Ragas, metric definitions, the three-question
 sample, observations, limitations, and the standalone Q2 command.
+
+## Read-only Chroma access
+
+Runtime retrieval uses a query-only adapter backed by a disposable snapshot of
+the filesystem-locked canonical Chroma index. Check or apply the policy with:
+
+```bash
+rag-setup/bin/python scripts/chroma_access.py status
+rag-setup/bin/python scripts/chroma_access.py lock
+```
+
+Embedded `PersistentClient` does not provide service-principal/RBAC
+credentials, so the repository does not contain a credential Chroma cannot
+enforce. See the [read-only Chroma policy](shared_output/Q2_RAG_Demo/docs/READ_ONLY_CHROMA.md)
+for the implemented boundary and unlock/rebuild/relock procedure.
