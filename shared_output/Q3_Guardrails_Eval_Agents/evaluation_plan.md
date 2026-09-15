@@ -25,3 +25,36 @@ the cited evidence. Report citation validity, citation coverage, claim support,
 abstention precision/recall/F1, and injection block/false-positive rates by cohort.
 The numeric thresholds in the Q3 PDF are proposed release targets until a labeled
 baseline is recorded.
+
+## Ragas evaluation
+
+Ragas complements the deterministic Q3 checks by separating retrieval quality
+from generation quality. A fluent answer may still be unsupported, irrelevant,
+or based on incomplete evidence. The local evaluator therefore records six
+diagnostics: faithfulness, answer relevancy, context precision, context recall,
+answer correctness, and answer similarity. These metrics are interpreted
+individually; they are not averaged into one composite score.
+
+Three questions with complete metric coverage were evaluated using Ragas 0.1.21,
+local Ollama `qwen3:8b`, labeled `Train.csv` references, and the exact contexts
+used by the RAG pipeline:
+
+| ID | Faithfulness | Answer relevancy | Context precision | Context recall | Answer correctness | Answer similarity |
+|---|---:|---:|---:|---:|---:|---:|
+| Q220 | 0.5000 | 0.8132 | 1.0000 | 1.0000 | 0.9866 | 0.9465 |
+| Q1016 | 1.0000 | 1.0000 | 1.0000 | 1.0000 | 0.9642 | 0.8570 |
+| Q1226 | 1.0000 | 0.7861 | 1.0000 | 1.0000 | 0.8933 | 0.8232 |
+| **Mean** | **0.8333** | **0.8665** | **1.0000** | **1.0000** | **0.9481** | **0.8756** |
+
+The perfect context precision and recall in this sample indicate that the
+retriever supplied strong reference-aligned evidence. Q220 nevertheless scored
+0.5 for faithfulness despite 0.9866 answer correctness, demonstrating why Q3
+needs claim-to-context grounding checks in addition to reference agreement.
+Q1016 was strong across all measures. Q1226 was fully grounded but less concise
+and reference-aligned, reflected in its lower relevancy and similarity scores.
+
+This is a small development sample, not a held-out production benchmark. Local
+Qwen generated and judged the answers, which can introduce correlated bias, so
+human review remains part of the Q3 evaluation design. The sample size was kept
+at three because sustained local inference caused significant MacBook heat;
+this is a machine resource constraint and not an observed algorithm failure.

@@ -16,6 +16,7 @@ BM25 retrieval, reciprocal-rank fusion, and Ollama `qwen3:8b` generation.
 - Trace mode with rank, semantic similarity, BM25 score, and source text
 - Validated configuration with `MALAWI_RAG_*` environment overrides
 - Versioned golden set and retrieval metrics under the Q3 deliverable
+- Ragas evaluation on labeled `Train.csv` references
 
 ## Setup
 
@@ -186,3 +187,16 @@ public-health information and does not give personal medical advice.
   then `python index.py` from the repository root.
 - Slow first query: the embedding model and qwen3 model may be loading locally;
   later queries reuse the loaded services.
+
+## Ragas evaluation
+
+The sequential, checkpointed evaluator has been exercised with three fully
+scored questions from local run `20260915T005831373201Z`. All six metrics were
+recorded for each question. The sample was intentionally limited because
+sustained local Qwen inference heated the MacBook; that hardware constraint does
+not indicate an algorithm failure. Run `python evaluate_ragas.py` using the
+project environment when a larger evaluation is required.
+
+See [Ragas setup and commands](shared_output/Q2_RAG_Demo/docs/RAGAS_EVALUATION.md) for installation, model setup, metrics,
+output paths, the reason for using Ragas, metric definitions, the three-question
+sample, observations, limitations, and the standalone Q2 command.

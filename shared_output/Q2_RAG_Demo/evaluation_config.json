@@ -1,0 +1,23 @@
+{
+  "train_csv": "Task2_dataset1/Train.csv",
+  "output_dir": "evaluation",
+  "max_questions": 1,
+  "seed": 42,
+  "cpu_threads": 2,
+  "judge_context_tokens": 8192,
+  "judge_output_tokens": 1024,
+  "http_timeout_seconds": 300,
+  "metric_timeout_seconds": 900,
+  "failure_limit": 3,
+  "metrics": [
+    "faithfulness",
+    "answer_relevancy",
+    "context_precision",
+    "context_recall",
+    "answer_correctness",
+    "answer_similarity"
+  ],
+  "judge_tokenizer": "Qwen/Qwen3-8B",
+  "tokenizer_local_files_only": false,
+  "generation_timeout_seconds": 600
+}

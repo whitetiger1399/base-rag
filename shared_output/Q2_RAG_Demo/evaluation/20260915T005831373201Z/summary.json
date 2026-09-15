@@ -1,0 +1,44 @@
+{
+  "faithfulness": {
+    "mean": 0.6875,
+    "valid": 4,
+    "selected": 10,
+    "failed": 0,
+    "not_applicable": 0
+  },
+  "answer_relevancy": {
+    "mean": 0.8998451554373185,
+    "valid": 4,
+    "selected": 10,
+    "failed": 0,
+    "not_applicable": 0
+  },
+  "context_precision": {
+    "mean": 0.9999999999822222,
+    "valid": 3,
+    "selected": 10,
+    "failed": 0,
+    "not_applicable": 0
+  },
+  "context_recall": {
+    "mean": 1.0,
+    "valid": 3,
+    "selected": 10,
+    "failed": 0,
+    "not_applicable": 0
+  },
+  "answer_correctness": {
+    "mean": 0.9480607495331528,
+    "valid": 3,
+    "selected": 10,
+    "failed": 0,
+    "not_applicable": 0
+  },
+  "answer_similarity": {
+    "mean": 0.875576331465944,
+    "valid": 3,
+    "selected": 10,
+    "failed": 0,
+    "not_applicable": 0
+  }
+}

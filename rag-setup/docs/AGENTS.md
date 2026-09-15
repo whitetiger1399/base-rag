@@ -128,6 +128,18 @@ Suggested entry format:
 - Future plans below describe intended project work; they do not claim that it
   has already been implemented or tested.
 
+### 2026-09-14 — Ragas design requested before implementation
+
+- **User request:** Create a Ragas agent plan only, suited to a MacBook M1 with
+  16 GB memory; handle concurrency conservatively and choose evaluation data.
+- **Confirmed boundary:** Latest request supersedes the earlier implementation
+  request for this turn. No further code changes, installs, or evaluation runs.
+- **Completed:** Created `rag-setup/docs/AGENT_RAGAS_PLAN.md` with dataset roles,
+  held-out validation design, metrics, exact-context tracing, sequential local
+  inference, checkpoints, resume behavior, and prototype remediation gates.
+- **Pending:** Implementation and valid measured Ragas scores. Prior attempts
+  failed; existing prototype files are not evidence of a completed evaluation.
+
 ## 4. Environment and Inputs
 
 ### 2026-09-12 — Q2 environment validation
@@ -477,6 +489,18 @@ Packaged deliverable path: `shared_output/Q2_RAG_Demo/`.
 | Implement and test RAG | Pending | No implementation or tests performed in this session. |
 | Generate submission files | Pending | PDFs, DOCX files, snippets, and demo evidence have not been generated. |
 
+
+### 2026-09-14 — Ragas runnable setup, execution deferred
+
+- **User request:** Implement an evaluator that can be run later; do not run evaluation now.
+- **Completed:** Replaced prototype bulk execution with sequential Ragas metric calls,
+  preserved application generation settings, captured selected contexts, and added
+  durable answer/metric checkpoints, config defaults, resume checks, and a standalone Q2 copy.
+- **Validation:** Syntax and lightweight checkpoint/aggregation checks passed without model calls.
+- **Pending:** Live adapter validation and measured scores; broader held-out dataset and
+  historical-submission auditing remain separate extensions documented in the plan.
+- **Command:** `rag-setup/bin/python evaluate_ragas.py` from the repository root.
+
 ## 9. Open Questions and Follow-Up Checks
 
 ### 2026-09-12 — Q2 remaining validation
@@ -610,3 +634,51 @@ Packaged deliverable path: `shared_output/Q2_RAG_Demo/`.
 - The initial root-level agent-file request was interrupted before file creation.
 - Followed the revised request by creating `rag-setup/docs/AGENTS.md` with
   section-level append instructions, requirements, plans, and progress.
+
+### 2026-09-15 — Ragas false infrastructure failure correction
+
+- **Confirmed:** Saved metric logs show byte-based prompt-budget rejections, not
+  observed memory exhaustion. The generic three-error stop hid the actual cause.
+- **Completed:** Added Qwen tokenizer budget validation, printed per-metric errors,
+  continued nontransport metric failures, and reused MiniLM without deprecated
+  HuggingFaceEmbeddings or extra model instances. Both entry points synchronized.
+- **Validation:** Two budget regression tests passed without inference/network.
+- **Pending:** Live evaluation; first use may fetch tokenizer files. Existing
+  root/package question-count preferences were preserved.
+
+### 2026-09-15 — Separate evaluation generation timeout
+
+- **Confirmed:** User traceback is an answer-generation HTTP read timeout at 120 seconds.
+- **Completed:** Configurable 600-second evaluation generation timeout in both entry
+  points; preserves application settings and writes transport errors before stopping.
+- **Validation:** Mocked timeout propagation and existing two budget checks passed.
+  No live inference performed.
+
+### 2026-09-15 — Partial live Ragas run documented
+
+- **User request:** Document why the project uses Ragas, explain its metrics,
+  and use the live sample with three complete questions and a partial fourth;
+  update all relevant documentation.
+- **Completed:** Updated both Q2 READMEs, both Q2 design documents, the detailed
+  Ragas guide, the progressive run report, and the Ragas plan/history.
+- **Evidence / files:** Run `20260915T005831373201Z` contains four answers and
+  20 successful metric records. Q220, Q1016, and Q1226 have all six metrics;
+  Q1008 has faithfulness and answer relevancy only. Its manifest is still
+  `running`.
+- **Confirmed limitation:** Results are a partial development-smoke snapshot,
+  not a completed benchmark or held-out score. Means are documented with their
+  valid counts and the self-judge limitation.
+- **Next action:** Resume the exact run to complete all eligible metrics for all
+  10 selected questions, then review traces and refresh final aggregates.
+
+### 2026-09-15 — Three-question Ragas reporting scope
+
+- **Status:** Superseded.
+- **User request:** Report only Q220, Q1016, and Q1226, which each have all six
+  Ragas metrics. Do not describe the evaluation as a partial run.
+- **Completed:** Revised the Q2 Ragas guide, READMEs, Q2 design files, generated
+  report narrative, Ragas implementation record, Q3 evaluation addendum, and Q3
+  Word/PDF deliverables around the three-question sample.
+- **Confirmed context:** The sample was limited because sustained local Qwen
+  inference caused significant MacBook heat. This is documented as a machine
+  resource constraint, not an algorithm failure.

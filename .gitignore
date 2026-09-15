@@ -2,6 +2,7 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .DS_Store
+shared_output/Q2_RAG_Demo/evaluation/.evaluation.lock
 
 # Keep the local Python environment out of Git while retaining its project log.
 rag-setup/*

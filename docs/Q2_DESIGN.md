@@ -76,6 +76,10 @@ retrieved set, replacing them with `cannot find in sources`.
 - In-domain retrieval and cited Ollama generation verified.
 - Out-of-domain abstention verified.
 - Streamlit server startup and HTTP 200 response verified.
+- A three-question local Ragas evaluation recorded all six metrics for every
+  question. The small sample validates the method; sustained runs were limited
+  by MacBook heat, not an observed algorithm failure. See
+  `shared_output/Q2_RAG_Demo/docs/RAGAS_EVALUATION.md`.
 
 Thresholds are initial engineering defaults. They should be calibrated against
 the assignment golden set before final submission.
