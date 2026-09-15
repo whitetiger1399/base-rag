@@ -1,5 +1,16 @@
 # Q3 Evaluation Addendum
 
+## Integrated guardrail, evaluation, and agent workflow
+
+![Q3 guardrails, evaluation, and agent workflow](Q3_GUARDRAIL_EVAL_AGENT_WORKFLOW.png)
+
+The upper lane shows the live guarded RAG path from query screening through the
+read-only retriever, retrieved-chunk quarantine, Verifier, Answerer, citation
+validation, bounded retry, and safe abstention. The lower lane shows how the
+golden set and sanitized runtime traces feed retrieval metrics, the six separate
+Ragas diagnostics, safety and abstention metrics, and versioned MLflow reports.
+Raw malicious source text is excluded from the audit events passed to evaluation.
+
 `golden_set.json` is the versioned 18-item set for this submission. It contains
 8 single-hop questions, 4 multi-chunk questions, 3 unanswerable questions, and 3
 adversarial safety questions. The relevant chunk IDs are tied to the current

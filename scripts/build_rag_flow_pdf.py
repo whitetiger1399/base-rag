@@ -5,50 +5,17 @@ from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
-from reportlab.platypus import Flowable, PageBreak, Paragraph, Preformatted, SimpleDocTemplate, Spacer
+from reportlab.platypus import Image as RLImage, PageBreak, Paragraph, Preformatted, SimpleDocTemplate, Spacer
 
 
 OUT = Path("shared_output/Q2_RAG_Demo/docs/RAG_FLOW_EXPLAINED.pdf")
-
-
-class FlowDiagram(Flowable):
-    def __init__(self):
-        super().__init__()
-        self.width, self.height = 7.0 * inch, 2.0 * inch
-
-    def draw(self):
-        c = self.canv
-        labels = ["Excel rows", "Chunking", "Indexes", "Hybrid retrieval", "Ollama answer"]
-        w, h, gap = 1.18 * inch, 0.48 * inch, 0.48 * inch
-        y = 1.25 * inch
-        for i, label in enumerate(labels):
-            x = 0.03 * inch + i * (w + gap)
-            c.setFillColor(colors.HexColor("#E8F1FA")); c.setStrokeColor(colors.HexColor("#2F5D8A"))
-            c.roundRect(x, y, w, h, 7, fill=1, stroke=1)
-            c.setFillColor(colors.HexColor("#17324D")); c.setFont("Helvetica-Bold", 7)
-            parts = label.split(" ")
-            if len(parts) > 2:
-                c.drawCentredString(x + w / 2, y + h / 2 + 4, " ".join(parts[:2]))
-                c.drawCentredString(x + w / 2, y + h / 2 - 6, " ".join(parts[2:]))
-            else:
-                c.drawCentredString(x + w / 2, y + h / 2 - 2, label)
-            if i < len(labels) - 1:
-                c.setStrokeColor(colors.HexColor("#6B7280"))
-                end = x + w + gap - 0.08 * inch
-                c.line(x + w, y + h / 2, end, y + h / 2)
-                c.line(end, y + h / 2, end - 5, y + h / 2 + 4)
-                c.line(end, y + h / 2, end - 5, y + h / 2 - 4)
-        c.setFillColor(colors.HexColor("#FFF4D6")); c.setStrokeColor(colors.HexColor("#B7791F"))
-        c.roundRect(2.05 * inch, 0.25 * inch, 2.9 * inch, 0.45 * inch, 7, fill=1, stroke=1)
-        c.setFillColor(colors.HexColor("#6B4E00")); c.setFont("Helvetica-Bold", 7.5)
-        c.drawCentredString(3.5 * inch, 0.49 * inch, "Evidence gate → cited answer or cannot find in sources")
-        c.setStrokeColor(colors.HexColor("#B7791F")); c.line(3.5 * inch, y, 3.5 * inch, 0.7 * inch)
+DIAGRAM = Path("shared_output/Q2_RAG_Demo/docs/Q2_RAG_WORKFLOW.png")
 
 
 styles = getSampleStyleSheet()
 styles.add(ParagraphStyle(name="Cover", parent=styles["Title"], fontSize=24, leading=29, textColor=colors.HexColor("#17324D"), alignment=TA_CENTER, spaceAfter=14))
 styles.add(ParagraphStyle(name="Sub", parent=styles["Normal"], fontSize=11, leading=15, textColor=colors.HexColor("#4B5563"), alignment=TA_CENTER, spaceAfter=14))
-styles.add(ParagraphStyle(name="H1x", parent=styles["Heading1"], fontSize=16, leading=20, textColor=colors.HexColor("#17324D"), spaceBefore=8, spaceAfter=7))
+styles.add(ParagraphStyle(name="H1x", parent=styles["Heading1"], fontSize=16, leading=20, textColor=colors.HexColor("#17324D"), spaceBefore=8, spaceAfter=7, keepWithNext=True))
 styles.add(ParagraphStyle(name="Bodyx", parent=styles["BodyText"], fontSize=9.2, leading=13, spaceAfter=6))
 code_style = ParagraphStyle("Code", fontName="Courier", fontSize=7.5, leading=10, backColor=colors.HexColor("#F3F4F6"), borderColor=colors.HexColor("#D1D5DB"), borderWidth=.5, borderPadding=7, spaceBefore=3, spaceAfter=7)
 
@@ -73,9 +40,10 @@ def footer(canvas, doc):
 
 
 story = [
-    Spacer(1, .65*inch), Paragraph("How the Malawi RAG Works", styles["Cover"]),
-    Paragraph("A step-by-step guide from workbook rows to a cited local Ollama answer", styles["Sub"]),
-    FlowDiagram(), Spacer(1, .2*inch),
+    Spacer(1, .20*inch), Paragraph("How the Malawi RAG Works", styles["Cover"]),
+    Paragraph("Q2 workflow design: from workbook rows to a cited local Ollama answer", styles["Sub"]),
+    RLImage(str(DIAGRAM), width=7.0*inch, height=3.69*inch), Spacer(1, .12*inch),
+    p("Runtime workflow: START → validate question → load the read-only Chroma snapshot and BM25 index → encode and retrieve → RRF fusion → quarantine unsafe chunks → evidence gate → build bounded context → local Ollama generation → citation validation → answer and trace. Missing evidence or an invalid citation routes directly to cannot find in sources; injected chunks are removed before generation."),
     p("This guide follows the current Q2 implementation. Each stage shows its input, transformation, output, and the file responsible for it."),
     p("Current corpus: six Malawi IDSR workbooks, 1,036 retrieval chunks, local all-MiniLM-L6-v2 embeddings, and local Ollama qwen3:8b generation."),
     PageBreak(),

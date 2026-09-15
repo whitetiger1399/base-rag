@@ -9,6 +9,13 @@ restricted interface exposing only `query()`; mutation methods raise
 `PermissionError`. The disposable copy cannot persist changes to the canonical
 index.
 
+![Q2 end-to-end local RAG workflow](Q2_RAG_WORKFLOW.png)
+
+The purple connector marks the storage trust boundary: locked canonical
+artifacts feed a private disposable snapshot, and the application receives only
+the query interface. The live question never receives a mutation path to the
+canonical Chroma files.
+
 ```text
 canonical Chroma (0444/0555) -> private temporary copy -> query-only adapter -> RAG
 ```

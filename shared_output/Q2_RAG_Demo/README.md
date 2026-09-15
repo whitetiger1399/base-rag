@@ -65,22 +65,13 @@ The source dataset and generated indexes are included in this repository for a
 reproducible assignment review. Rebuild them after changing chunking or model
 settings; `storage/manifest.json` records the corpus and index parameters.
 
-```mermaid
-flowchart LR
-    A[Excel workbooks] --> B[ingest.py]
-    B --> C[chunks.jsonl]
-    C --> D[index.py]
-    D --> E[Chroma embeddings]
-    D --> F[BM25 index]
-    U[Question] --> G[Streamlit]
-    G --> H[HybridRetriever]
-    E --> H
-    F --> H
-    H --> I[Safety and evidence gate]
-    I --> J[Ollama qwen3:8b]
-    J --> K[Citation validation]
-    K --> L[Answer or abstention]
-```
+![Q2 end-to-end local RAG workflow](docs/Q2_RAG_WORKFLOW.png)
+
+The three-lane design separates the explicit offline index build from the live
+answer path and evaluation path. The canonical Chroma and BM25 stores are locked
+after indexing. Serving uses a disposable Chroma snapshot behind a query-only
+adapter, while sanitized runtime traces feed retrieval, Ragas, safety, and
+observability reports.
 
 ## Run
 

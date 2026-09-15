@@ -7,6 +7,13 @@ production-scale quality claim. The sample size was deliberately limited because
 sustained local Qwen inference caused significant heat on the MacBook; this is a
 machine resource constraint, not evidence of an algorithm failure.
 
+![Q2 end-to-end local RAG workflow](Q2_RAG_WORKFLOW.png)
+
+In the evaluation lane, a versioned golden set and sanitized live traces feed
+deterministic retrieval and safety measures alongside six separate Ragas
+diagnostics. Results are logged with model, corpus, configuration, latency, and
+failure metadata so a later tuning or rebuild decision remains reproducible.
+
 ## Why this project uses Ragas
 
 A RAG answer can sound fluent while failing at different stages. Retrieval may

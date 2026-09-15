@@ -693,6 +693,36 @@ Packaged deliverable path: `shared_output/Q2_RAG_Demo/`.
   LibreOffice/`soffice` is unavailable. The existing ReportLab Q3 renderer was
   used for the PDF and page-image QA instead.
 
+### 2026-09-15 — Assignment workflow designs synchronized
+
+- **User request:** Add a relevant workflow design to every Q1-Q4 PDF or DOCX
+  assignment deliverable.
+- **Completed:** Expanded Q1's retrieval workflow, Q2's runtime and failure
+  branches, Q3's guarded multi-agent loop, and Q4's state-graph routes and
+  terminal outcomes. Updated all four PDFs and the Q1/Q3/Q4 editable DOCX files.
+- **Scope control:** Q1 and Q4 remain two pages; Q3 remains three pages; the Q2
+  learning guide remains five pages.
+- **Validation:** Rasterized all 12 PDF pages and visually inspected them. No
+  clipping, overlap, or cropped workflow nodes remained after reducing the Q2
+  diagram width.
+- **Rendering note:** Direct DOCX rendering was unavailable because
+  LibreOffice/`soffice` is not installed. The existing assignment PDF renderer
+  was used, and DOCX workflow headings/text/tables were structurally verified.
+
+### 2026-09-15 — Q1 visual retrieval graph added
+
+- **User feedback:** The Q1 retrieval design contained workflow prose but no
+  visible graph/flow diagram.
+- **Completed:** Added `Q1_RETRIEVAL_WORKFLOW.png` and embedded it in the Q1
+  DOCX and PDF under “6. Retrieval workflow design.” The graph separates the
+  offline index-build lane from online query/evidence selection and shows the
+  sufficient-evidence and abstention branches.
+- **Completed:** Added `scripts/build_q1_workflow_diagram.py` so the diagram can
+  be regenerated consistently.
+- **Validation:** The Q1 PDF remains two pages. Both pages and the source diagram
+  were visually inspected after correcting PDF image handling and overlapping
+  branch labels; no clipping or overlap remains.
+
 ### 2026-09-15 — Partial live Ragas run documented
 
 - **User request:** Document why the project uses Ragas, explain its metrics,
@@ -735,3 +765,138 @@ Packaged deliverable path: `shared_output/Q2_RAG_Demo/`.
 - **Validation:** Added focused tests for homoglyph/leetspeak/symbol/spacing
   bypasses, semantic-detector failure behavior, fractional faithfulness, chunk
   quarantine/auditing, and the similarity fallback. All 21 project tests pass.
+
+### 2026-09-15 — Q3 integrated workflow diagram added
+
+- **User feedback:** The Q3 deliverable described guardrails, evaluation, and
+  agents but did not contain a visible integrated flow diagram.
+- **Completed:** Added `Q3_GUARDRAIL_EVAL_AGENT_WORKFLOW.png` to the Q3 shared
+  output and embedded it in the editable DOCX and generated PDF. The upper lane
+  covers query and chunk safety, the read-only hybrid retriever, Verifier,
+  Answerer, citation validation, bounded retries, cited answers, and safe
+  abstention. The lower lane connects the golden set and sanitized traces to
+  Recall@k/MRR, six Ragas metrics, safety/abstention measures, and MLflow.
+- **Completed:** Added `scripts/build_q3_workflow_diagram.py` and
+  `scripts/embed_q3_workflow_diagram.py` for repeatable generation and embedding,
+  and linked the diagram from `evaluation_plan.md`.
+- **Validation:** The Q3 PDF remains three pages, the DOCX contains one inline
+  diagram, and PDF page 3 contains the rendered image. The source image and all
+  three rasterized PDF pages were visually inspected with no clipping or overlap.
+- **Rendering note:** Direct DOCX rendering remains unavailable because
+  LibreOffice/`soffice` is not installed. The project ReportLab renderer and
+  PyMuPDF page-image inspection were used for final PDF verification.
+
+### 2026-09-15 — Q2 workflow diagram redesigned
+
+- **User request:** Replace the basic Q2 flow with a more detailed, visually
+  engaging design and update the Q2 documentation.
+- **Completed:** Added a three-lane diagram covering offline
+  knowledge build, the guarded live answer path, and evaluation/observability.
+  It shows section-aware chunking, stable metadata, MiniLM and BM25 indexes,
+  locked canonical stores, the private query-only Chroma snapshot, hybrid RRF
+  retrieval, evidence and citation gates, cited-answer/abstention branches,
+  Ragas metrics, MLflow reporting, and the tuning loop.
+- **Documentation:** Embedded the reusable `Q2_RAG_WORKFLOW.png` in the root and
+  standalone READMEs, Q2 design, read-only Chroma guide, Ragas guide, and the
+  regenerated five-page `RAG_FLOW_EXPLAINED.pdf`.
+- **Reproducibility:** Added `scripts/build_q2_workflow_diagram.py`; updated
+  `scripts/build_rag_flow_pdf.py` to embed the generated diagram and keep
+  section headings with their following content.
+- **Validation:** Visually inspected the full-size diagram and all five
+  rasterized PDF pages. Corrected the hybrid-card label collision and the
+  orphaned Ragas heading; the final render has no clipping or overlap.
+
+### 2026-09-15 — Q2 diagram changed to light theme
+
+- **User feedback:** The dark background reduced the visual quality of the Q2
+  diagram in the documentation.
+- **Completed:** Replaced the dark canvas and cards with a white background,
+  soft teal/blue/gold lane fills, white process cards, restrained shadows, dark
+  navy text, and higher-contrast decision badges. The workflow content and
+  connections remain unchanged.
+- **Validation:** Regenerated the shared PNG and five-page learning-guide PDF,
+  then visually inspected the full-size diagram and all PDF pages. No clipping,
+  overlap, or low-contrast text was found.
+
+### 2026-09-15 — Q4 state-graph workflow diagram added
+
+- **User request:** Design and add a polished Q4 diagram that explains the full
+  graph-based multi-agent workflow.
+- **Design:** The diagram exposes the typed shared-state contract; Retriever,
+  Safety, Verifier, Answerer, and deterministic validation nodes; the sufficient
+  evidence path; the focused-query retry loop bounded to two return edges; all
+  fail-closed routes; cited-answer and abstention terminal states; and the
+  sanitized observability bus.
+- **Completed:** Added `Q4_GRAPH_MULTI_AGENT_WORKFLOW.png`, embedded it in the Q4
+  DOCX/PDF, and added `Q4_WORKFLOW.md` as a concise diagram companion. Added
+  reproducible generator and DOCX embedding scripts.
+- **Layout:** The PDF now uses three pages. Section 3 begins on page 3 so the
+  conditional-routing table and termination rules remain together.
+- **Validation:** The Q4 DOCX contains one inline image and PDF page 1 contains
+  the rendered diagram. The full-size visual and all three PDF pages were
+  inspected after removing an unsafe-route annotation collision; no clipping or
+  overlap remains.
+- **Rendering note:** The canonical DOCX renderer could not run because
+  LibreOffice/`soffice` is unavailable. The project ReportLab renderer and
+  PyMuPDF page-image inspection were used for PDF verification.
+
+### 2026-09-15 — Q4 workflow layout and agent identities revised
+
+- **User feedback:** The long topology paragraph above the diagram looked
+  awkward, the diagram was too small, shared-state fields were hard to read,
+  text competed with box boundaries, and the individual agent types were not
+  visually distinct enough.
+- **Completed:** Removed the long paragraph beginning “The workflow is a bounded
+  state graph” from the Q4 DOCX/PDF and placed the enlarged diagram immediately
+  after the workflow heading. Increased its PDF height from 3.62 to 4.90 inches.
+- **Diagram redesign:** Rebuilt the visual around five larger shared-state cards,
+  six numbered and color-coded agent cards, and a separate Router decision node.
+  Every agent now states its type, input, and output. The diagram explicitly
+  labels the success path, focused-query retry loop, fail-closed route,
+  deterministic validation, terminal outcomes, and sanitized trace bus.
+- **Readability:** Replaced the small monospaced state labels with larger clean
+  text, split long fields and validator output across lines, removed connector
+  labels that obscured cards, and kept security notes outside agent boundaries.
+- **Validation:** Confirmed the removed paragraph is absent, the DOCX contains
+  one inline diagram, and the three-page PDF contains the enlarged image on page
+  1. The source image and all PDF pages were rasterized and visually inspected;
+  no text leaves its card and no content is clipped.
+
+### 2026-09-15 — Q4 validation outcome routes spaced apart
+
+- **User feedback:** The `VALID` and `INVALID` labels and their arrows were
+  visually merging between Validator, Cited Answer, and Safe Abstention.
+- **Completed:** Shifted Validator left, widened both terminal cards, increased
+  the routing corridor, and placed `VALID` and `INVALID` on separate vertical
+  paths. The fail-closed route now travels around the outside of both result
+  cards and enters Safe Abstention from the right, independently of Validator's
+  invalid-output edge.
+- **Validation:** Regenerated the diagram, DOCX, and three-page PDF. Inspected
+  the full-resolution image and PDF page 1; the labels, arrows, and terminal text
+  no longer overlap or merge.
+
+### 2026-09-15 — Q4 sufficient-route label repositioned
+
+- **User feedback:** The `SUFFICIENT` route label overlapped the Answerer card's
+  `GROUNDED WRITER` role band.
+- **Completed:** Moved the label above the Router and added a right-pointing
+  direction marker. The Router-to-Answerer connector and the full Answerer role
+  band are now unobstructed.
+- **Validation:** Regenerated the PNG, DOCX, and three-page PDF and inspected the
+  source image plus rendered PDF page 1 at high resolution. No overlap remains.
+
+### 2026-09-15 — Q4 graph expanded into separate routing rows
+
+- **User feedback:** Move `SUFFICIENT` toward Answerer, keep the candidate label
+  clear of its edge, keep `FAIL CLOSED` off its edge, and enlarge the diagram so
+  labels and connectors have more room.
+- **Completed:** Increased the embedded diagram from 4.90 to 5.99 inches high
+  and expanded its canvas from 1,120 to 1,370 pixels. Answerer and Validator now
+  occupy a dedicated success row; `SUFFICIENT → ANSWERER` sits immediately above
+  that route, and `CANDIDATE` occupies the open connector gap.
+- **Completed:** Moved Cited Answer and Safe Abstention into separate terminal
+  cards below Validator. `VALID` and `INVALID` use independent routes, while
+  `FAIL CLOSED` sits above an outer edge that bypasses generation and validation.
+- **Validation:** Regenerated the PNG, DOCX, and three-page PDF. Inspected the
+  full-resolution diagram and all PDF pages; route labels are separated from
+  edges and cards, and no text is clipped.

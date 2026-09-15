@@ -6,6 +6,13 @@ Build a working local assistant over the Malawi IDSR training guides. Answers
 must use retrieved evidence, cite stable chunk IDs or section names, expose a
 retrieval trace, and return `cannot find in sources` when evidence is weak.
 
+![Q2 end-to-end local RAG workflow](Q2_RAG_WORKFLOW.png)
+
+The diagram separates index construction from serving so the canonical stores
+can remain locked during normal use. It also shows the two retrieval signals,
+guarded answer branches, sanitized traces, and evaluation feedback used to tune
+configuration before an explicit rebuild.
+
 ## Data model
 
 Each workbook row contains a paragraph number and paragraph text. Ingestion

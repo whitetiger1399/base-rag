@@ -80,22 +80,12 @@ Run both again after changing chunking settings.
 
 ## Runtime flow
 
-```mermaid
-flowchart LR
-    A[Excel workbooks] --> B[ingest.py]
-    B --> C[chunks.jsonl]
-    C --> D[index.py]
-    D --> E[Chroma embeddings]
-    D --> F[BM25 index]
-    U[User question] --> G[Streamlit app]
-    G --> H[HybridRetriever]
-    E --> H
-    F --> H
-    H --> I[Evidence and safety gate]
-    I --> J[Ollama qwen3:8b]
-    J --> K[Citation validation]
-    K --> L[Answer or cannot find in sources]
-```
+![Q2 end-to-end local RAG workflow](shared_output/Q2_RAG_Demo/docs/Q2_RAG_WORKFLOW.png)
+
+The workflow separates offline corpus preparation, the guarded live answer
+path, and evaluation. The live retriever uses semantic Chroma search and BM25
+lexical search with RRF fusion, then routes through evidence, generation, and
+citation checks before returning a cited answer or safe abstention.
 
 ## Run
 
